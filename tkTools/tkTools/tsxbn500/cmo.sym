@@ -1,0 +1,157 @@
+/*!
+ *@brief	cmoファイルのシンボル
+ */
+
+#include "typedef.h"
+
+struct Material
+{
+	float Ambient[4];
+	float Diffuse[4];
+	float Specular[4];
+	float SpecularPower;
+	float Emissive[4];
+	float UVTransform[4*4];
+};
+
+struct SubMesh
+{
+	UINT MaterialIndex;//マテリアルの要素番号。
+	UINT IndexBufferIndex;//どのインデックスバッファを使用するか。バッファ内のインデックスの要素番号ではない。
+	UINT VertexBufferIndex;//どの頂点バッファを使用するか。バッファ内の頂点の要素番号ではない。
+	UINT StartIndex;//サブメッシュの開始インデックス。ここで言うインデックスはインデックスバッファのインデックス。
+	UINT PrimCount;//サブメッシュに含まれるプリミティブの数。ほとんどの場合、3角形リストなので3倍すれば頂点数になるはず。
+};
+
+struct Vertex
+{
+	float Position[3];
+	float Normal[3];//法線
+	float Tangent[4];//接空間に変換する行列
+	UINT color;
+	float TextureCoordinates[2];//UV座標
+};
+
+struct SkinningVertex
+{
+	UINT boneIndex[4];//一度に4つまでのボーンから影響を受けられる
+	float boneWeight[4];
+};
+
+struct MeshExtents
+{
+	//バウンディングスフィア
+	float CenterX, CenterY, CenterZ;
+	float Radius;
+
+	//バウンディングボックス
+	float MinX, MinY, MinZ;
+	float MaxX, MaxY, MaxZ;
+};
+
+struct Bone
+{
+	UINT ParentIndex;
+	float InvBindPos[4];//バインドポーズの逆行列
+	float BindPos[4];//バインドポーズの行列
+	float LocalTransform[4];
+};
+
+struct Keyframe
+{
+	UINT BoneIndex;
+	float Time;
+	float Transform[4*4];
+};
+
+
+//メッシュの数だけループする
+$UINT mesh_count;
+
+for(int i = 0; i < mesh_count; i++){
+
+	//メッシュの名前
+	$UINT length_of_mesh_name;
+	$WORD mesh_name[length_of_mesh_name];
+	
+	//マテリアルの数だけループ
+	$UINT material_count;
+	for(int i = 0; i < material_count; i++){
+	
+		//マテリアル名
+		$UINT length_of_material_name;
+		$WORD material_name[length_of_material_name];
+		
+		$Material material;
+		
+		//ピクセルシェーダー名
+		$UINT length_of_pixel_shader_name;
+		$WORD pixel_shader_name[length_of_pixel_shader_name];
+		
+		//テクスチャは8枚読み込む。
+		for(int i = 0; i < 8; i++){
+			$UINT length_of_texture_name;
+			$WORD texture_name[length_of_texture_name];
+		}
+	}
+	
+	//ボーンアニメーション使えるモデルでなければ0が入ってる
+	$BYTE isSkeletonAnimationMesh;
+	
+	//サブメッシュ。1つのメッシュ内でマテリアルを使い分けられる。
+	$UINT submesh_count;
+	for(int i = 0; i < submesh_count; i++){
+		$SubMesh submesh;
+	}
+	
+	//インデックスバッファ。下のindex_buffer_countはインデックスバッファの数であって、インデックス自体の要素数ではない。
+	$UINT index_buffer_count;
+	for(int i = 0; i < index_buffer_count; i++){
+		$UINT number_of_index;
+		$WORD index[number_of_index];
+	}
+	
+	//頂点バッファ。下のindex_buffer_countは頂点バッファの数であって、頂点自体の要素数ではない。
+	$UINT vertex_buffer_count;
+	for(int i = 0; i < vertex_buffer_count; i++){
+		$UINT number_of_vertex;
+		$Vertex vertex[number_of_vertex];
+	}
+	
+	//スキン頂点バッファ。同上。頂点ごとの、スキンアニメーションに必要な情報だけが格納されている。
+	$UINT skin_vertex_buffer_count;
+	for(int i = 0; i < skin_vertex_buffer_count; i++){
+		$UINT number_of_skin_vertex;
+		$SkinningVertex skin_vertex[number_of_skin_vertex];
+	}
+	
+	//バウンディングボックスとバウンディングスフィア(球)の情報
+	$MeshExtents meshExtents;
+	
+	//ボーンアニメーションしないモデルならここでメッシュ情報は終了。
+	if(isSkeletonAnimationMesh != 0){
+	
+		//ボーン
+		$UINT bone_count;
+		for(int i = 0; i < bone_count; i++){
+			$UINT length_of_bone_name;
+			$WORD bone_name[length_of_bone_name];
+			&Bone bone;
+		}
+		
+		//アニメーションクリップ
+		$UINT anim_clip_count;
+		for(int i = 0; i < anim_clip_count; i++){
+			$UINT length_of_anim_clip_name;
+			$WORD anim_clip_name[length_of_anim_clip_name];
+			$float start_time;
+			$float end_time;
+			
+			//キーフレーム
+			$UINT keyframe_count;
+			for(int i = 0; i < keyframe_count; i++){
+				$Keyframe keyframe;
+			}
+		}
+	}	
+}

@@ -1,0 +1,86 @@
+/*!
+ *@brief	tkmファイルのシンボル
+ */
+ 
+#include "typedef.h"
+ 
+#maxloop 65536
+
+struct Vector3{
+	float x, y, z;
+};
+struct Vector2{
+	float x, y;
+};
+struct Vector4{
+	float x, y, z, w;
+};
+
+struct Vertex{
+	Vector3 pos;
+	Vector3 normal;
+	Vector2 uv;
+	float weights[4];
+	short indices[4];
+};
+$short TKM_VERSION;		//ファイルバージョン。
+$short numMeshParts;	//メッシュパーツの数。
+
+for( int meshPartsNo = 0; meshPartsNo < numMeshParts; meshPartsNo++ ){
+	$int numMaterial;
+	$int numVertex;
+	$BYTE indexSize;
+	$BYTE pad;
+	$BYTE pad;
+	$BYTE pad;
+	
+	//マテリアル情報。
+	for( int matNo = 0; matNo < numMaterial; matNo++){
+		//アルベド。
+		$int albedoMapNameLen;
+		if( albedoMapNameLen > 0){
+			$BYTE texName[albedoMapNameLen+1];
+			int numPad = albedoMapNameLen % 4;
+			$BYTE pading[numPad];
+		}
+		//法線マップ
+		$int normalMapNameLen;
+		if( normalMapNameLen > 0){
+			$BYTE texName[normalMapNameLen+1];
+			int numPad = normalMapNameLen % 4;
+			$BYTE pading[numPad];
+		}
+
+		//スペキュラマップ
+		$int specMapNameLen;
+		if( specMapNameLen > 0){
+			$BYTE texName[specMapNameLen+1];
+			int numPad = specMapNameLen % 4;
+			$BYTE pading[numPad];
+		}
+	}
+	//頂点バッファ。
+	for( int vertNo = 0; vertNo < numVertex; vertNo++ ){
+		$Vertex vertex;
+	}
+	for( int indexBufferNo = 0; indexBufferNo < numMaterial; indexBufferNo++){
+		//インデックスバッファ。
+		$int numPolygon;
+		int numIndex = numPolygon * 3;
+		for( int indexNo = 0; indexNo < numIndex; indexNo++ ){
+			if(indexSize == 2 ){
+				//インデックスのサイズが2バイト。
+				$WORD index;
+			}else{
+				//インデックスのサイズが4バイト。
+				$DWORD index;
+			}
+		}
+		//パディング。
+		if(indexSize == 2 ){
+			if( (numPolygon * 3) % 2 != 0 ){
+				$WORD pad;
+			}
+		}
+	}
+}
