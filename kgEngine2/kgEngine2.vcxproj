@@ -42,7 +42,6 @@
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="system\system.cpp" />
     <ClCompile Include="tkFile\TkaFile.cpp" />
     <ClCompile Include="tkFile\TkmFile.cpp" />
     <ClCompile Include="tkFile\TksFile.cpp" />
@@ -78,7 +77,6 @@
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="system\system.h" />
     <ClInclude Include="tkFile\TkaFile.h" />
     <ClInclude Include="tkFile\TkmFile.h" />
     <ClInclude Include="tkFile\TksFile.h" />
@@ -184,7 +182,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

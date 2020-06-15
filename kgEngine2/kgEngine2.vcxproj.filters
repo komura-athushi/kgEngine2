@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="graphics">
-      <UniqueIdentifier>{328e4a54-8197-4ab5-84f4-4d74aa1ac635}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{ba105d44-681f-44e1-8e9a-bd02c1542361}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="HID\GamePad.cpp" />
     <ClCompile Include="math\Math.cpp" />
     <ClCompile Include="math\Matrix.cpp" />
@@ -33,7 +25,6 @@
     <ClCompile Include="graphics\StructuredBuffer.cpp" />
     <ClCompile Include="graphics\Texture.cpp" />
     <ClCompile Include="graphics\VertexBuffer.cpp" />
-    <ClCompile Include="system\system.cpp" />
     <ClCompile Include="kgEngine2.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
@@ -70,7 +61,6 @@
     <ClInclude Include="graphics\Texture.h" />
     <ClInclude Include="graphics\VertexBuffer.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="system\system.h" />
     <ClInclude Include="kgEngine2.h" />
   </ItemGroup>
 </Project>

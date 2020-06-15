@@ -10,8 +10,8 @@ LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 class CEngine
 {
 public:
-	CEngine();
-	~CEngine();
+	CEngine() {}
+	~CEngine() {}
 	//ゲームの初期化。
 	void InitGame(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow, const TCHAR* appName);
 	//ウィンドウメッセージをディスパッチ。falseが返ってきたら、ゲーム終了。
@@ -29,6 +29,8 @@ public:
 	}
 private:
 };
+
+extern CEngine g_engine;
 
 //エンジンのインスタンスを取得
 static inline CEngine& Engine()

@@ -6,8 +6,10 @@ ConstantBuffer::~ConstantBuffer()
 	//アンマーップ
 	CD3DX12_RANGE readRange(0, 0);
 	for (auto& cb : m_constantBuffer) {
-		cb->Unmap(0, &readRange);
-		cb->Release();
+		if (cb != nullptr) {
+			cb->Unmap(0, &readRange);
+			cb->Release();
+		}
 	}
 }
 void ConstantBuffer::Init(int size, void* srcData)
