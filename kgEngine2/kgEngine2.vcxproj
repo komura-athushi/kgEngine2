@@ -37,9 +37,11 @@
     <ClCompile Include="graphics\Texture.cpp" />
     <ClCompile Include="graphics\VertexBuffer.cpp" />
     <ClCompile Include="HID\GamePad.cpp" />
+    <ClCompile Include="kgEngine2.cpp" />
     <ClCompile Include="math\Math.cpp" />
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
+    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="system\system.cpp" />
     <ClCompile Include="tkFile\TkaFile.cpp" />
     <ClCompile Include="tkFile\TkmFile.cpp" />
@@ -71,6 +73,7 @@
     <ClInclude Include="graphics\Texture.h" />
     <ClInclude Include="graphics\VertexBuffer.h" />
     <ClInclude Include="HID\GamePad.h" />
+    <ClInclude Include="kgEngine2.h" />
     <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />
@@ -136,12 +139,13 @@
     <IncludePath>$(IncludePath);$(ProjectDir)</IncludePath>
     <OutDir>$(SolutionDir)$(Platform)\(Configuration)\</OutDir>
     <LibraryPath>$(ProjectDir)\DirectXTK\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)</IncludePath>
-    <OutDir>$(SolutionDir)$(Platform)\(Configuration)\</OutDir>
-    <LibraryPath>\$(ProjectDir)\DirectXTK\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <LibraryPath>$(ProjectDir)\DirectXTK\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -162,6 +166,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,6 +184,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
