@@ -34,10 +34,15 @@ g_objectParams = #()
 */
 fn BuildOutputNodeInfo n parentId= 
 (
+	Messagebox "ノードの構築開始"
 	objParam = ObjectParam "" true true 0 #() 0 #() 0 #() #() 0 #() Matrix3 Matrix3 -1 Node
 	objParam.objName = n.name
 	objParam.bindPose = n.transform
+	
+	Messagebox "名前だの情報だの取得して"
+	
 	if n.modifiers[maxPlugin] != undefined then(
+		Messagebox "色々出力していく"
 		objParam.isShadowCaster = n.modifiers[maxPlugin].caster
 		objParam.isShadowReceiver = n.modifiers[maxPlugin].receiver
 
@@ -67,10 +72,13 @@ fn BuildOutputNodeInfo n parentId=
 		)
 
 	)else(
+		Messagebox "なんかShadow関連Offにしてるけどなんで"
 		objParam.isShadowCaster = false
 		objParam.isShadowReceiver = false
 	)
 
+	Messagebox "出力終わり、出来てるかどうかは知らん"
+	
 	objParam.invBindPose = inverse n.transform
 	objParam.n = n
 	if n.parent == undefined then(
@@ -85,8 +93,10 @@ fn BuildOutputNodeInfo n parentId=
 	parentId = g_objectParams.count-1
 	--子供も。
 	for child in n.children do(
+		Messagebox "子供のノード構築する"
 		BuildOutputNodeInfo child parentId
 	)
+	Messagebox "ノードの構築終わり"
 )
 
 /*!

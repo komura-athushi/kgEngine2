@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="graphics\animation\Animation.cpp" />
+    <ClCompile Include="graphics\animation\AnimationClip.cpp" />
+    <ClCompile Include="graphics\animation\AnimationPlayController.cpp" />
     <ClCompile Include="graphics\Camera.cpp" />
     <ClCompile Include="graphics\ConstantBuffer.cpp" />
     <ClCompile Include="graphics\DescriptorHeap.cpp" />
@@ -41,12 +44,16 @@
     <ClCompile Include="math\Math.cpp" />
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
+    <ClCompile Include="graphics\ModelRender.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tkFile\TkaFile.cpp" />
     <ClCompile Include="tkFile\TkmFile.cpp" />
     <ClCompile Include="tkFile\TksFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="graphics\animation\Animation.h" />
+    <ClInclude Include="graphics\animation\AnimationClip.h" />
+    <ClInclude Include="graphics\animation\AnimationPlayController.h" />
     <ClInclude Include="graphics\Camera.h" />
     <ClInclude Include="graphics\ConstantBuffer.h" />
     <ClInclude Include="graphics\d3dx12.h" />
@@ -76,6 +83,7 @@
     <ClInclude Include="math\Math.h" />
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />
+    <ClInclude Include="graphics\ModelRender.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tkFile\TkaFile.h" />
     <ClInclude Include="tkFile\TkmFile.h" />

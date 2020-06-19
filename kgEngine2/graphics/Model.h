@@ -50,6 +50,13 @@ public:
 		m_meshParts.BindSkeleton(skeleton);
 	}
 	/// <summary>
+	/// スケルトンを関連付ける、Modelの保有してるスケルトンを関連付ける
+	/// </summary>
+	void BindSkeleton()
+	{
+		m_meshParts.BindSkeleton(m_skeleton);
+	}
+	/// <summary>
 	/// 描画
 	/// </summary>
 	/// <param name="renderContext">レンダリングコンテキスト</param>
@@ -62,6 +69,14 @@ public:
 	{
 		return m_world;
 	}
+	//骨取得
+	Skeleton& GetSkeleton()
+	{
+		return m_skeleton;
+	}
+private:
+	void InitSkeleton(const char* filePath);
+
 private:
 	Matrix m_world;			//ワールド行列。
 	TkmFile m_tkmFile;		//tkmファイル。

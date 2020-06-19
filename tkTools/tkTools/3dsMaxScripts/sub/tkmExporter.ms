@@ -300,7 +300,7 @@ private
 	fn InternalSave filePath = (
 		--保存だよ
 		file = fopen filePath "wb"
-		--try(
+		try(
 			--ヘッダーを出力
 			WriteByte file TKM_VERSION
 			if m_isFlatShading == true then(
@@ -394,9 +394,9 @@ private
 					
 				)
 			)			
-	/*	)catch(
-			messageBox "tkmファイルの保存に失敗しました。"
-		)*/
+		)catch(
+			messageBox "tkmファイルの保存に失敗しました。保存するだけなのだが"
+		)
 		fclose file
 		--テクスチャのコンバード
 		for texFilePath in textureFilePaths do(
@@ -419,18 +419,26 @@ public
 			try(
 				--出力先のフォルダを取得。
 				outputFolder = pathConfig.removePathLeaf filePath
+				Messagebox "フォルダを出力していく"
 				--スケルトンが取得できる？
 				TrySaveSkeleton nodesTmp filePath
+				
+				Messagebox "tks関連おｋ"
 
 				md = ModelData meshParts:#()
 
+				Messagebox "モデルデータを空にして"
+				
 				for p in nodesTmp do (
 					--編集可能頂点に変換できるか調べる。
 					if canConvertTo p Mesh then(
 						--メッシュパーツをビルド				
 						BUildMeshParts p
 					)
-				) 
+				)
+				
+				Messagebox "メッシュパーツをビルド"
+				
 				--保存。
 				InternalSave filePath
 				messageBox "出力成功しました。" beep:false
@@ -438,7 +446,7 @@ public
 				if cloneMeshObj != undefined then(
 					delete cloneMeshObj
 				)
-				messageBox "出力に失敗しました。" beep:false
+				messageBox "tkm出力に失敗しました。、どこがおかしいのだ" beep:false
 			)
 		)
 	)

@@ -241,6 +241,10 @@ public:
 	/// <param name="parentMatrix">親のボーンのワールド行列。</param>
 	static 	void UpdateBoneWorldMatrix(Bone& bone, const Matrix& parentMatrix);
 
+	void SetPlayAnimation()
+	{
+		m_isPlayAnimation = true;
+	}
 private:
 	TksFile m_tksFile;								//TKSファイル。
 	static const int BONE_MAX = 512;				//ボーンの最大数。
@@ -248,4 +252,5 @@ private:
 	std::vector<BonePtr>	m_bones;				//ボーンの配列。
 	std::unique_ptr<Matrix[]>	m_boneMatrixs;		//ボーン行列。
 	bool m_isInited = false;						//初期化済み？
+	bool m_isPlayAnimation = false;					//アニメーションを再生してる？
 };

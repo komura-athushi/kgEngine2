@@ -94,7 +94,11 @@ void Material::InitShaders(
 )
 {
 	m_vsNonSkinModel.LoadVS(fxFilePath, vsEntryPointFunc);
-	m_vsSkinModel.LoadVS(fxFilePath, vsEntryPointFunc);
+	//スキンありはエントリー関数にSKinを＋するぜ
+	std::string vsEntry = vsEntryPointFunc;
+	vsEntry += "Skin";
+	m_vsSkinModel.LoadVS(fxFilePath, vsEntry.c_str());
+	//m_vsSkinModel.LoadVS(fxFilePath, vsEntryPointFunc);
 	m_psModel.LoadPS(fxFilePath, psEntryPointFunc);
 }
 void Material::BeginRender(RenderContext& rc, int hasSkin)
