@@ -235,8 +235,8 @@ private:
 	RenderTarget m_depthRT;				//深値マップ
 	Sprite m_defferdSprite;				//ディファードレンダリングの為のテクスチャ
 	struct SDirectionLight {
-		Vector4 lightcolor;			//ライトのカラー。
 		Vector4 direction;		//ライトの方向。
+		Vector4 lightcolor;			//ライトのカラー。
 	};
 	SDirectionLight m_dirLight;
 };

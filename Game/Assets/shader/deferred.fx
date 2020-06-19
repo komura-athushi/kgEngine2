@@ -5,8 +5,9 @@ cbuffer cb : register(b0){
 };
 
 cbuffer DirectionLight : register(b1){
-	float3 ligColor;		//ライトのカラー
 	float3 ligDirection;	//ライトの方向。
+	float3 ligColor;		//ライトのカラー
+
 };
 struct VSInput{
 	float4 pos : POSITION;
@@ -40,6 +41,7 @@ float4 PSMain( PSInput In ) : SV_Target0
 	float t = max( 0.0f, dot( normal, ligDirection) * -1.0f);
 	lig = ligColor * t;
 	float4 finalColor = albedo;
-	//finalColor.xyz *= lig;
+	finalColor.xyz *= lig;
+	//finalColor.xyz = ligColor;
 	return finalColor;
 }

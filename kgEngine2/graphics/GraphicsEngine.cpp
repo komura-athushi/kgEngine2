@@ -195,8 +195,8 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		DXGI_FORMAT_D32_FLOAT
 	);
 
-	m_dirLight.direction = { -0.577f, -0.577f, -0.577f, 0.0f };
-	m_dirLight.lightcolor = { 0.5f, 0.5f, 0.5f, 1.0f };
+	m_dirLight.direction = { 0.707f, 0.707f, 0.0f, 0.0f };
+	m_dirLight.lightcolor = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	//ディファードレンダリング用のテクスチャを作成しまーす
 	//テクスチャデータの設定をする
