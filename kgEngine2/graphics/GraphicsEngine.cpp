@@ -167,6 +167,57 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	g_camera2D = &m_camera2D;
 	g_camera3D = &m_camera3D;
 
+	//ディファードレンダリングのためのレンダリングターゲットを初期するぜ
+	m_albedRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		DXGI_FORMAT_D32_FLOAT
+	);
+
+	m_normalRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		DXGI_FORMAT_UNKNOWN
+	);
+
+	m_depthRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R16G16B16A16_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	);
+
+	m_dirLight.direction = { -0.577f, -0.577f, -0.577f, 0.0f };
+	m_dirLight.lightcolor = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+	//ディファードレンダリング用のテクスチャを作成しまーす
+	//テクスチャデータの設定をする
+	SpriteInitData spriteInitData;
+	spriteInitData.m_width = FRAME_BUFFER_W;
+	spriteInitData.m_height = FRAME_BUFFER_H;
+	//アルベド
+	spriteInitData.m_textures[0] = &m_albedRT.GetRenderTargetTexture();
+	//法線
+	spriteInitData.m_textures[1] = &m_normalRT.GetRenderTargetTexture();
+	//深度
+	spriteInitData.m_textures[2] = &m_depthRT.GetRenderTargetTexture();
+	//ディファードレンダリング専用のシェーダー使う
+	spriteInitData.m_fxFilePath = "Assets/shader/deferred.fx";
+	spriteInitData.m_expandConstantBuffer = &m_dirLight;
+	spriteInitData.m_expandConstantBufferSize = sizeof(m_dirLight);
+	m_defferdSprite.Init(spriteInitData);
+
+	
+
+
 	return true;
 }
 IDXGIFactory4* GraphicsEngine::CreateDXGIFactory()
@@ -424,21 +475,48 @@ void GraphicsEngine::BeginRender()
 	//シザリング矩形を設定。
 	m_renderContext.SetScissorRect(m_scissorRect);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
-	rtvHandle.ptr += m_frameIndex * m_rtvDescriptorSize;
+	m_currentFrameBufferRTVHandle = m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+	m_currentFrameBufferRTVHandle.ptr += m_frameIndex * m_rtvDescriptorSize;
 	//深度ステンシルバッファのディスクリプタヒープの開始アドレスを取得。
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+	m_currentFrameBufferDSVHandle = m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
 	//バックバッファがレンダリングターゲットとして設定可能になるまで待つ。
 	m_renderContext.WaitUntilToPossibleSetRenderTarget(m_renderTargets[m_frameIndex]);
 
 	//レンダリングターゲットを設定。
-	m_renderContext.SetRenderTarget(rtvHandle, dsvHandle);
+	m_renderContext.SetRenderTarget(m_currentFrameBufferRTVHandle, m_currentFrameBufferDSVHandle);
 
 	const float clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	m_renderContext.ClearRenderTargetView(rtvHandle, clearColor);
-	m_renderContext.ClearDepthStencilView(dsvHandle, 1.0f);
+	m_renderContext.ClearRenderTargetView(m_currentFrameBufferRTVHandle, clearColor);
+	m_renderContext.ClearDepthStencilView(m_currentFrameBufferDSVHandle, 1.0f);
 
 }
+
+void GraphicsEngine::BeginDeferredRender()
+{
+	//レンダリングターゲットを設定
+	RenderTarget* rts[] = {
+		&m_albedRT,
+		&m_normalRT
+	};
+
+	m_renderContext.WaitUntilToPossibleSetRenderTargets(2, rts);
+	m_renderContext.SetRenderTargets(2, rts);
+	m_renderContext.ClearRenderTargetViews(2, rts);
+}
+
+void GraphicsEngine::EndModelDraw()
+{
+	//レンダリングターゲットを設定
+	RenderTarget* rts[] = {
+		&m_albedRT,
+		&m_normalRT
+	};
+	m_renderContext.WaitUntilFinishDrawingToRenderTargets(2, rts);
+
+	g_graphicsEngine->ChangeRenderTargetToFrameBuffer(m_renderContext);
+	m_defferdSprite.Draw(m_renderContext);
+}
+
 void GraphicsEngine::EndRender()
 {
 	// レンダリングターゲットへの描き込み完了待ち

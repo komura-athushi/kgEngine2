@@ -40,6 +40,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		//model.Draw(renderContext);
 
+		g_graphicsEngine->BeginDeferredRender();
+
 		modelRender.Update();
 		modelRender.Draw();
 
@@ -52,6 +54,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		a++;
 		//box.Update();
 		//box.Draw();
+
+		g_graphicsEngine->EndModelDraw();
 
 		//レンダリング終了。
 		g_graphicsEngine->EndRender();

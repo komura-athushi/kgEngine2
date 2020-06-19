@@ -3,23 +3,43 @@
 #include "Indexbuffer.h"
 #include "VertexBuffer.h"
 #include "ConstantBuffer.h"
+#include "DescriptorHeap.h"
 
 class Texture;
 
+//スプライトに設定できる最大テクスチャ数。
+const int MAX_TEXTURE = 16;
+
+template< class TExpandData > struct SpriteExpandDataInfo {
+	TExpandData* m_expandData = nullptr;
+	int m_expandDataSize = 0;
+};
+/// <summary>
+/// スプライトの初期化データ。
+/// </summary>
+struct SpriteInitData {
+	const char* m_ddsFilePath[MAX_TEXTURE] = { nullptr };	//DDSファイルのファイルパス。
+	Texture* m_textures[MAX_TEXTURE] = { nullptr };		//使用するテクスチャ。DDSファイルのパスが指定されている場合は、このパラメータは無視されます。
+	const char* m_vsEntryPointFunc = "VSMain";			//頂点シェーダーのエントリーポイント。
+	const char* m_psEntryPoinFunc = "PSMain";			//ピクセルシェーダーのエントリーポイント。
+	const char* m_fxFilePath = nullptr;					//.fxファイルのファイルパス。
+	UINT m_width = 0;									//スプライトの幅。
+	UINT m_height = 0;									//スプライトの高さ。
+	void* m_expandConstantBuffer = nullptr;				//ユーザー拡張の定数バッファ
+	int m_expandConstantBufferSize = 0;					//ユーザー拡張の定数バッファのサイズ。
+};
 /// <summary>
 /// スプライトクラス。
 /// </summary>
-class Sprite  {
+class Sprite {
 public:
 	static const Vector2	DEFAULT_PIVOT;					//!<ピボット。
 	virtual ~Sprite();
 	/// <summary>
 	/// 初期化。
 	/// </summary>
-	/// <param name="ddsFilePath">ddsファイルのファイルパス</param>
-	/// <param name="w">幅</param>
-	/// <param name="h">高さ</param>
-	void Init(const char* ddsFilePath, float w, float h);
+	/// <param name="initData">初期化データ</param>
+	void Init(const SpriteInitData& initData);
 	/// <summary>
 	/// 更新。
 	/// </summary>
@@ -40,12 +60,44 @@ public:
 	/// <param name="renderContext">レンダリングコンテキスト/param>
 	void Draw(RenderContext& renderContext);
 private:
-	IndexBuffer m_indexBuffer;		//インデックスバッファ。
-	VertexBuffer m_vertexBuffer;	//頂点バッファ。
-	Texture m_texture;				//テクスチャ。
-	Vector3 m_position ;			//座標。
-	Vector2 m_size;					//サイズ。
-	Quaternion m_rotation ;			//回転。
+	/// <summary>
+	/// テクスチャを初期化。
+	/// </summary>
+	/// <param name="initData"></param>
+	void InitTextures(const SpriteInitData& initData);
+	/// <summary>
+	/// シェーダーを初期化。
+	/// </summary>
+	/// <param name="initData"></param>
+	void InitShader(const SpriteInitData& initData);
+	/// <summary>
+	/// ディスクリプタヒープを初期化。
+	/// </summary>
+	/// <param name="initData"></param>
+	void InitDescriptorHeap();
+	/// <summary>
+	/// 頂点バッファとインデックスバッファを初期化。
+	/// </summary>
+	/// <param name="initData"></param>
+	void InitVertexBufferAndIndexBuffer(const SpriteInitData& initData);
+	/// <summary>
+	/// パイプラインステートを初期化する。
+	/// </summary>
+	void InitPipelineState();
+	/// <summary>
+	/// 定数バッファを初期化。
+	/// </summary>
+	/// <param name="initData"></param>
+	void InitConstantBuffer(const SpriteInitData& initData);
+private:
+	IndexBuffer m_indexBuffer;			//インデックスバッファ。
+	VertexBuffer m_vertexBuffer;		//頂点バッファ。
+	int m_numTexture = 0;				//テクスチャの枚数。
+	Texture m_textures[MAX_TEXTURE];	//テクスチャ。
+	Texture* m_textureExternal[MAX_TEXTURE] = { nullptr };	//外部から指定されたテクスチャ
+	Vector3 m_position;				//座標。
+	Vector2 m_size;						//サイズ。
+	Quaternion m_rotation;			//回転。
 	Matrix m_world;					//ワールド行列。
 
 	struct LocalConstantBuffer {
@@ -54,6 +106,8 @@ private:
 	};
 	LocalConstantBuffer m_constantBufferCPU;	//CPU側の定数バッファ。
 	ConstantBuffer		m_constantBufferGPU;	//GPU側の定数バッファ。
+	ConstantBuffer		m_userExpandConstantBufferGPU;	//ユーザー拡張の定数バッファ(GPU側)
+	void* m_userExpandConstantBufferCPU = nullptr;		//ユーザー拡張の定数バッファ(CPU側)
 	DescriptorHeap		m_descriptorHeap;		//ディスクリプタヒープ。
 	RootSignature		m_rootSignature;		//ルートシグネチャ。
 	PipelineState		m_pipelineState;		//パイプラインステート。

@@ -44,6 +44,12 @@ struct SPSIn {
 	float  specPow : TEXCOORD3;
 };
 
+//ピクセルシェーダーからの出力
+struct SPSOut {
+	float4 albedo : SV_Target0;		//アルベド
+	float3 normal : SV_Target1;		//法線
+};
+
 //モデルテクスチャ。
 Texture2D<float4> g_texture : register(t0);
 //法線マップ
@@ -115,7 +121,7 @@ SPSIn VSMainSkin(SVSIn vsIn)
 /// <summary>
 /// モデル用のピクセルシェーダーのエントリーポイント
 /// </summary>
-float4 PSMain(SPSIn psIn) : SV_Target0
+SPSOut PSMain(SPSIn psIn)
 {
 	float4 color = g_texture.Sample(g_sampler,psIn.uv);
 
@@ -146,6 +152,11 @@ float4 PSMain(SPSIn psIn) : SV_Target0
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	//finalColor.xyz = color.xyz * lig;
 	finalColor.xyz = color.xyz;
-	return finalColor;
+
+	SPSOut spsOut;
+	spsOut.albedo = finalColor;
+	spsOut.normal = psIn.normal;
+
+	return spsOut;
 	//return float4(specPow, 0.0f, 0.0f, 1.0f);    
 }

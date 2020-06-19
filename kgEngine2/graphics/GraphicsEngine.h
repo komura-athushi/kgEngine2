@@ -12,6 +12,10 @@
 
 #include "RenderContext.h"
 
+#include "RenderTarget.h"
+
+#include "Sprite.h"
+
 #include "Camera.h"
 
 /// <summary>
@@ -19,7 +23,7 @@
 /// </summary>
 class GraphicsEngine {
 public:
-	
+	enum { FRAME_BUFFER_COUNT = 2 };						//フレームバッファの数。
 	/// <summary>
 	/// デストラクタ。
 	/// </summary>
@@ -49,6 +53,22 @@ public:
 	/// 1フレームのレンダリングの終了時に呼び出してください。
 	/// </remarks>
 	void EndRender();
+	/// <summary>
+	/// ディファードレンダリングの開始前に呼び出して下さい
+	/// </summary>
+	void BeginDeferredRender();
+	/// <summary>
+	/// ディファードレンダリングでモデルのドローが終わったら呼び出してください
+	/// </summary>
+	void EndModelDraw();
+	/// <summary>
+	/// レンダリングターゲットをフレームバッファに変更する。
+	/// </summary>
+	/// <param name="rc"></param>
+	void ChangeRenderTargetToFrameBuffer(RenderContext& rc)
+	{
+		rc.SetRenderTarget(m_currentFrameBufferRTVHandle, m_currentFrameBufferDSVHandle);
+	}
 	/// <summary>
 	/// D3Dデバイスを取得。
 	/// </summary>
@@ -172,6 +192,7 @@ private:
 	/// </summary>
 	void WaitDraw();
 
+
 private:
 	//GPUベンダー定義。
 	enum GPU_Vender {
@@ -180,7 +201,7 @@ private:
 		GPU_VenderIntel,	//AMD
 		Num_GPUVender,
 	};
-	enum { FRAME_BUFFER_COUNT = 2 };						//フレームバッファの数。
+
 	ID3D12Device* m_d3dDevice = nullptr;					//D3Dデバイス。
 	ID3D12CommandQueue* m_commandQueue = nullptr;			//コマンドキュー。
 	IDXGISwapChain3* m_swapChain = nullptr;					//スワップチェイン。
@@ -207,7 +228,19 @@ private:
 	UINT m_frameBufferHeight = 0;		//フレームバッファの高さ。
 	Camera m_camera2D;					//2Dカメラ。
 	Camera m_camera3D;					//3Dカメラ。
+	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferRTVHandle;		//現在書き込み中のフレームバッファのレンダリングターゲットビューのハンドル。
+	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferDSVHandle;		//現在書き込み中のフレームバッファの深度ステンシルビューの
+	RenderTarget m_albedRT;				//アルベドマップ
+	RenderTarget m_normalRT;			//法線マップ
+	RenderTarget m_depthRT;				//深値マップ
+	Sprite m_defferdSprite;				//ディファードレンダリングの為のテクスチャ
+	struct SDirectionLight {
+		Vector4 lightcolor;			//ライトのカラー。
+		Vector4 direction;		//ライトの方向。
+	};
+	SDirectionLight m_dirLight;
 };
+
 extern GraphicsEngine* g_graphicsEngine;	//グラフィックスエンジン
 extern Camera* g_camera2D;					//2Dカメラ。
 extern Camera* g_camera3D;					//3Dカメラ。

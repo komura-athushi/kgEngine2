@@ -3,6 +3,7 @@
 class ConstantBuffer;
 class Texture;
 class DescriptorHeap;
+class RenderTarget;
 /// <summary>
 /// レンダリングコンテキスト。
 /// </summary>
@@ -139,14 +140,25 @@ public:
 		m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 	}
 	/// <summary>
+	/// レンダリングターゲットとビューポートを同時に設定する。
+	/// </summary>
+	/// <param name="numRT"></param>
+	/// <param name="renderTarget"></param>
+	void SetRenderTargets(UINT numRT, RenderTarget* renderTargets[]);
+	/// <summary>
 	/// レンダリングターゲットビューのクリア。
 	/// </summary>
 	/// <param name="renderTarget">レンダリングターゲット</param>
 	/// <param name="clearColor">クリアカラー</param>
+	void ClearRenderTargetViews(
+		int numRt,
+		RenderTarget* renderTargets[]
+	);
 	void ClearRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float* clearColor)
 	{
 		m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	}
+
 	/// <summary>
 	/// デプスステンシルビューをクリア
 	/// </summary>
@@ -170,7 +182,9 @@ public:
 	/// 使用したい場合は、この関数を使って描き込み完了待ちを行う必要があります。
 	/// </remarks>
 	/// <param name="renderTarget">レンダリングターゲット</param>
-	void WaitUntilFinishDrawingToRenderTarget( ID3D12Resource* renderTarget )
+	void WaitUntilFinishDrawingToRenderTargets(int numRt, RenderTarget* renderTargets[]);
+	void WaitUntilFinishDrawingToRenderTarget(RenderTarget& renderTarget);
+	void WaitUntilFinishDrawingToRenderTarget(ID3D12Resource* renderTarget)
 	{
 		m_commandList->ResourceBarrier(
 			1,
@@ -186,7 +200,9 @@ public:
 	/// レンダリングターゲットとして設定したい場合は、
 	/// 本関数を使って使用可能になるまで待機する必要があります。
 	/// </remarks>
-	void WaitUntilToPossibleSetRenderTarget( ID3D12Resource* renderTarget)
+	void WaitUntilToPossibleSetRenderTargets(int numRt, RenderTarget* renderTargets[]);
+	void WaitUntilToPossibleSetRenderTarget(RenderTarget& renderTarget);
+	void WaitUntilToPossibleSetRenderTarget(ID3D12Resource* renderTarget)
 	{
 		m_commandList->ResourceBarrier(
 			1,
@@ -207,7 +223,7 @@ public:
 	/// <param name="resrouce"></param>
 	/// <param name="beforeState"></param>
 	/// <param name="afterState"></param>
-	void TransitionResourceState(ID3D12Resource* resrouce , D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
+	void TransitionResourceState(ID3D12Resource* resrouce, D3D12_RESOURCE_STATES beforeState, D3D12_RESOURCE_STATES afterState)
 	{
 		m_commandList->ResourceBarrier(
 			1,
@@ -226,7 +242,7 @@ public:
 	/// </summary>
 	/// <param name="commandAllocator"></param>
 	/// <param name="pipelineState"></param>
-	void Reset( ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState)
+	void Reset(ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState)
 	{
 		m_commandList->Reset(commandAllocator, pipelineState);
 	}
@@ -244,10 +260,10 @@ public:
 	/// <param name="ThreadGroupCountX"></param>
 	/// <param name="ThreadGroupCountY"></param>
 	/// <param name="ThreadGroupCountZ"></param>
-	void Dispatch( 
+	void Dispatch(
 		UINT ThreadGroupCountX,
 		UINT ThreadGroupCountY,
-		UINT ThreadGroupCountZ )
+		UINT ThreadGroupCountZ)
 	{
 		m_commandList->Dispatch(ThreadGroupCountX, ThreadGroupCountY, ThreadGroupCountZ);
 	}
