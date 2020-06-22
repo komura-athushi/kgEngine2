@@ -16,6 +16,8 @@
 
 #include "Sprite.h"
 
+#include "PostEffect\PostEffect.h"
+
 #include "Camera.h"
 
 /// <summary>
@@ -62,12 +64,25 @@ public:
 	/// </summary>
 	void EndModelDraw();
 	/// <summary>
+	/// ポストエフェクトかける
+	/// </summary>
+	void RendertoPostEffect();
+	/// <summary>
 	/// レンダリングターゲットをフレームバッファに変更する。
 	/// </summary>
 	/// <param name="rc"></param>
 	void ChangeRenderTargetToFrameBuffer(RenderContext& rc)
 	{
 		rc.SetRenderTarget(m_currentFrameBufferRTVHandle, m_currentFrameBufferDSVHandle);
+	}
+	/// <summary>
+	/// レンダリングターゲットを設定
+	/// </summary>
+	/// <param name="numRT"></param>
+	/// <param name="renderTargets"></param>
+	void SetRenderTarget(int numRT, RenderTarget* renderTargets[])
+	{
+		m_renderContext.SetRenderTargets(numRT, renderTargets);
 	}
 	/// <summary>
 	/// D3Dデバイスを取得。
@@ -125,6 +140,14 @@ public:
 	UINT GetFrameBufferHeight() const
 	{
 		return m_frameBufferHeight;
+	}
+	/// <summary>
+	/// メインレンダリングターゲットを取得
+	/// </summary>
+	/// <returns></returns>
+	RenderTarget& GetMainRenderTarget()
+	{
+		return m_mainRenderTarget;
 	}
 private:
 	/// <summary>
@@ -229,7 +252,7 @@ private:
 	Camera m_camera2D;					//2Dカメラ。
 	Camera m_camera3D;					//3Dカメラ。
 	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferRTVHandle;		//現在書き込み中のフレームバッファのレンダリングターゲットビューのハンドル。
-	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferDSVHandle;		//現在書き込み中のフレームバッファの深度ステンシルビューの
+	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferDSVHandle;		//現在書き込み中のフレームバッファの深度ステンシルビューのハンドル
 	RenderTarget m_albedRT;				//アルベドマップ
 	RenderTarget m_normalRT;			//法線マップ
 	RenderTarget m_depthRT;				//深値マップ
@@ -239,6 +262,9 @@ private:
 		Vector4 lightcolor;			//ライトのカラー。
 	};
 	SDirectionLight m_dirLight;
+	RenderTarget m_mainRenderTarget;
+	PostEffect m_postEffect;
+	Sprite m_copyMainRtToFrameBufferSprite;
 };
 
 extern GraphicsEngine* g_graphicsEngine;	//グラフィックスエンジン

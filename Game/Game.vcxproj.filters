@@ -8,6 +8,8 @@
     <ClInclude Include="gameStdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\modelData\blue.png" />
+    <ImageContentTask Include="Assets\modelData\blue.png" />
+    <ImageContentTask Include="Assets\sprite\a.png" />
+    <ImageContentTask Include="Assets\modelData\purple.png" />
   </ItemGroup>
 </Project>

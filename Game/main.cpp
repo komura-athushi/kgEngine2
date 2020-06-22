@@ -29,6 +29,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	modelRender.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
 	modelRender.PlayAnimation(0, 0.0f);
 
+
+	Sprite sprite;
+
+	SpriteInitData spriteInitData;
+	spriteInitData.m_ddsFilePath[0] = "Assets/sprite/a.dds";
+	spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
+	spriteInitData.m_width = FRAME_BUFFER_W;
+	spriteInitData.m_height = FRAME_BUFFER_H;
+	sprite.Init(spriteInitData);
+
+	ModelRender modelRender2;
+	modelRender2.Init("Assets/modelData/box3.tkm");
+	modelRender2.SetPosition(Vector3(0.0f, 0.0f, -180.0f));
 	//ModelRender box;
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
@@ -40,13 +53,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		//model.Draw(renderContext);
 
+		RenderTarget* rt[] = {
+			&g_graphicsEngine->GetMainRenderTarget()
+		};
+
+		g_graphicsEngine->SetRenderTarget(1, rt);
+
+		sprite.Draw(g_graphicsEngine->GetRenderContext());
+
 		g_graphicsEngine->BeginDeferredRender();
+
+		modelRender2.Update();
+		modelRender2.Draw();
 
 		modelRender.Update();
 		modelRender.Draw();
 
 		if (a >= 200) {
-			modelRender.PlayAnimation(0, 0.0f);
+			//modelRender.PlayAnimation(0, 0.0f);
 		}
 		else if (a >= 100) {
 			modelRender.PlayAnimation(1, 0.0f);
@@ -54,8 +78,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		a++;
 		//box.Update();
 		//box.Draw();
+	
 
 		g_graphicsEngine->EndModelDraw();
+
+		
+
+		g_graphicsEngine->RendertoPostEffect();
 
 		//レンダリング終了。
 		g_graphicsEngine->EndRender();

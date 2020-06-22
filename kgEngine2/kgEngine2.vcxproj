@@ -31,6 +31,8 @@
     <ClCompile Include="graphics\MeshParts.cpp" />
     <ClCompile Include="graphics\Model.cpp" />
     <ClCompile Include="graphics\PipelineState.cpp" />
+    <ClCompile Include="graphics\PostEffect\Bloom.cpp" />
+    <ClCompile Include="graphics\PostEffect\PostEffect.cpp" />
     <ClCompile Include="graphics\RenderTarget.cpp" />
     <ClCompile Include="graphics\RootSignature.cpp" />
     <ClCompile Include="graphics\RWStructuredBuffer.cpp" />
@@ -46,6 +48,7 @@
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
     <ClCompile Include="graphics\ModelRender.cpp" />
+    <ClCompile Include="graphics\Primitive.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tkFile\TkaFile.cpp" />
     <ClCompile Include="tkFile\TkmFile.cpp" />
@@ -69,6 +72,8 @@
     <ClInclude Include="graphics\MiniEngine.h" />
     <ClInclude Include="graphics\Model.h" />
     <ClInclude Include="graphics\PipelineState.h" />
+    <ClInclude Include="graphics\PostEffect\Bloom.h" />
+    <ClInclude Include="graphics\PostEffect\PostEffect.h" />
     <ClInclude Include="graphics\RenderContext.h" />
     <ClInclude Include="graphics\RenderContext_inline.h" />
     <ClInclude Include="graphics\RenderTarget.h" />
@@ -86,6 +91,7 @@
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />
     <ClInclude Include="graphics\ModelRender.h" />
+    <ClInclude Include="graphics\Primitive.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tkFile\TkaFile.h" />
     <ClInclude Include="tkFile\TkmFile.h" />

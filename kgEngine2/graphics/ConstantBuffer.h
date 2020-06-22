@@ -30,7 +30,12 @@ public:
 	void CopyToVRAM(T& data)
 	{
 		CopyToVRAM(&data);
-	}
+	}	
+	/// <summary>
+	/// 定数バッファの中身を更新。
+	/// </summary>
+	/// <param name="data"></param>
+	void Update(void* data);
 	/// <summary>
 	/// ディスクリプタヒープにConstantBufferViewを登録。
 	/// </summary>

@@ -32,7 +32,6 @@ PSInput VSMain(VSInput In)
 }
 float4 PSMain( PSInput In ) : SV_Target0
 {
-	//step-7 G-Bufferの内容を使ってライティング。
 	float4 albedo = albedoTexture.Sample(Sampler, In.uv);
 	float3 normal = normalTexture.Sample(Sampler, In.uv).xyz;
 	normal = (normal * 2.0f)-1.0f;
@@ -40,8 +39,8 @@ float4 PSMain( PSInput In ) : SV_Target0
 	float3 lig = 0.0f;
 	float t = max( 0.0f, dot( normal, ligDirection) * -1.0f);
 	lig = ligColor * t;
+	lig += 0.5f;
 	float4 finalColor = albedo;
 	finalColor.xyz *= lig;
-	//finalColor.xyz = ligColor;
 	return finalColor;
 }

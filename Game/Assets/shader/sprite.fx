@@ -18,8 +18,7 @@ struct PSInput{
 	float2 uv  : TEXCOORD0;
 };
 
-Texture2D<float4> albedoTexture : register(t0);	//アルベド。
-Texture2D<float4> normalTexture : register(t1);	//法線。
+Texture2D<float4> Texture : register(t0);	 //カラーテクスチャ
 sampler Sampler : register(s0);
 
 PSInput VSMain(VSInput In) 
@@ -29,8 +28,10 @@ PSInput VSMain(VSInput In)
 	psIn.uv = In.uv;
 	return psIn;
 }
-float4 PSMain( PSInput In ) : SV_Target0
+
+float4 PSMain(PSInput In) : SV_Target0
 {
-	//step-7 G-Bufferの内容を使ってライティング。
+	float4 Color = Texture.Sample(Sampler,In.uv);
+	return Color;
 
 }

@@ -66,3 +66,9 @@ void ConstantBuffer::CopyToVRAM(void* data)
 	auto backBufferIndex = g_graphicsEngine->GetBackBufferIndex();
 	memcpy(m_constBufferCPU[backBufferIndex], data, m_size);
 }
+
+void ConstantBuffer::Update(void* data)
+{
+	auto backBufferIndex = g_graphicsEngine->GetBackBufferIndex();
+	memcpy(m_constBufferCPU[backBufferIndex], data, m_size);
+}

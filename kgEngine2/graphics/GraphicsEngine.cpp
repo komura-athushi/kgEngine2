@@ -167,6 +167,15 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	g_camera2D = &m_camera2D;
 	g_camera3D = &m_camera3D;
 
+	m_mainRenderTarget.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R16G16B16A16_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	);
+
 	//ディファードレンダリングのためのレンダリングターゲットを初期するぜ
 	m_albedRT.Create(
 		FRAME_BUFFER_W,
@@ -195,8 +204,8 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		DXGI_FORMAT_D32_FLOAT
 	);
 
-	m_dirLight.direction = { 0.707f, 0.707f, 0.0f, 0.0f };
-	m_dirLight.lightcolor = { 0.3f, 0.3f, 0.3f, 1.0f };
+	m_dirLight.direction = { 0.577f, 0.577f, -0.577f, 0.0f };
+	m_dirLight.lightcolor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	//ディファードレンダリング用のテクスチャを作成しまーす
 	//テクスチャデータの設定をする
@@ -215,11 +224,15 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	spriteInitData.m_expandConstantBufferSize = sizeof(m_dirLight);
 	m_defferdSprite.Init(spriteInitData);
 
-	
+	spriteInitData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
+	spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
 
+	m_copyMainRtToFrameBufferSprite.Init(spriteInitData);
 
+	m_postEffect.Init();
 	return true;
 }
+
 IDXGIFactory4* GraphicsEngine::CreateDXGIFactory()
 {
 	UINT dxgiFactoryFlags = 0;
@@ -513,8 +526,23 @@ void GraphicsEngine::EndModelDraw()
 	};
 	m_renderContext.WaitUntilFinishDrawingToRenderTargets(2, rts);
 
-	g_graphicsEngine->ChangeRenderTargetToFrameBuffer(m_renderContext);
+	//ChangeRenderTargetToFrameBuffer(m_renderContext);
+
+	RenderTarget* rt[] = {
+		&m_mainRenderTarget
+	};
+
+	SetRenderTarget(1, rt);
 	m_defferdSprite.Draw(m_renderContext);
+}
+
+void GraphicsEngine::RendertoPostEffect()
+{
+	m_postEffect.Render(m_renderContext);
+
+	ChangeRenderTargetToFrameBuffer(m_renderContext);
+
+	m_copyMainRtToFrameBufferSprite.Draw(m_renderContext);
 }
 
 void GraphicsEngine::EndRender()

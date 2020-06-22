@@ -152,6 +152,7 @@ SPSOut PSMain(SPSIn psIn)
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	//finalColor.xyz = color.xyz * lig;
 	finalColor.xyz = color.xyz;
+	
 
 	SPSOut spsOut;
 	spsOut.albedo = finalColor;

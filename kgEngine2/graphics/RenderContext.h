@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RenderTarget.h"
+
 class ConstantBuffer;
 class Texture;
 class DescriptorHeap;
@@ -135,6 +137,37 @@ public:
 	/// レンダリングターゲットとビューポートを同時に設定する。
 	/// </summary>
 	/// <param name="renderTarget"></param>
+	void SetRenderTargetAndViewport(RenderTarget& renderTarget)
+	{
+		D3D12_VIEWPORT viewport;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.Width = static_cast<float>(renderTarget.GetWidth());
+		viewport.Height = static_cast<float>(renderTarget.GetHeight());
+		viewport.MinDepth = D3D12_MIN_DEPTH;
+		viewport.MaxDepth = D3D12_MAX_DEPTH;
+		SetViewport(viewport);
+		SetRenderTarget(renderTarget);
+	}
+	/// <summary>
+	/// レンダリングターゲットを設定
+	/// </summary>
+	void SetRenderTarget(RenderTarget& renderTarget)
+	{
+		auto rtvHandle = renderTarget.GetRTVCpuDescriptorHandle();
+		if (renderTarget.IsExsitDepthStencilBuffer()) {
+			auto dsvHandle = renderTarget.GetDSVCpuDescriptorHandle();
+			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+		}
+		else {
+			//デプスステンシルバッファはない。
+			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+		}
+	}
+	/// <summary>
+	/// レンダリングターゲットとビューポートを同時に設定する。
+	/// </summary>
+	/// <param name="renderTarget"></param>
 	void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle)
 	{
 		m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
@@ -158,7 +191,16 @@ public:
 	{
 		m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	}
-
+	/// <summary>
+	/// レンダリングターゲットビューのクリア。
+	/// </summary>
+	/// <param name="renderTarget">レンダリングターゲット</param>
+	/// <param name="clearColor">クリアカラー</param>
+	void ClearRenderTargetView(RenderTarget& renderTarget, const float* clearColor)
+	{
+		auto rtvHandle = renderTarget.GetRTVCpuDescriptorHandle();
+		m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	}
 	/// <summary>
 	/// デプスステンシルビューをクリア
 	/// </summary>
