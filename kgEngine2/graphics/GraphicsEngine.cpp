@@ -161,20 +161,27 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	m_camera2D.SetPosition({0.0f, 0.0f, 1.0f});
 	m_camera2D.SetTarget({ 0.0f, 0.0f, 0.0f });
 
-	m_camera3D.SetPosition({0.0f, 50.0f, 200.0f} );
-	m_camera3D.SetTarget({ 0.0f, 50.0f, 0.0f });
+	m_camera3D.SetPosition({200.0f, 200.0f, 200.0f} );
+	m_camera3D.SetTarget({ 0.0f, 0.0f, 0.0f });
 
 	g_camera2D = &m_camera2D;
 	g_camera3D = &m_camera3D;
+		
+	float color3[4] = { 0.5f,0.5f,0.5f,1.0f };
 
+	//メインレンダリングターゲット
 	m_mainRenderTarget.Create(
 		FRAME_BUFFER_W,
 		FRAME_BUFFER_H,
 		1,
 		1,
 		DXGI_FORMAT_R16G16B16A16_FLOAT,
-		DXGI_FORMAT_D32_FLOAT
+		DXGI_FORMAT_D32_FLOAT,
+		color3
 	);
+
+	float color[4] = { 1.0f,1.0f,1.0f,1.0f };
+	float color2[4] = { 0.0f,0.0f,0.0f,1.0f };
 
 	//ディファードレンダリングのためのレンダリングターゲットを初期するぜ
 	m_albedRT.Create(
@@ -183,7 +190,8 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		1,
 		1,
 		DXGI_FORMAT_B8G8R8A8_UNORM,
-		DXGI_FORMAT_D32_FLOAT
+		DXGI_FORMAT_D32_FLOAT,
+		color2
 	);
 
 	m_normalRT.Create(
@@ -192,7 +200,18 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		1,
 		1,
 		DXGI_FORMAT_B8G8R8A8_UNORM,
-		DXGI_FORMAT_UNKNOWN
+		DXGI_FORMAT_UNKNOWN,
+		color2
+	);
+
+	m_worldPosRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_UNKNOWN,
+		color
 	);
 
 	m_depthRT.Create(
@@ -201,7 +220,27 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		1,
 		1,
 		DXGI_FORMAT_R16G16B16A16_FLOAT,
-		DXGI_FORMAT_D32_FLOAT
+		DXGI_FORMAT_D32_FLOAT,
+		color
+	);
+
+	/*m_shadowColorRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		DXGI_FORMAT_D32_FLOAT,
+		color
+	);*/
+	m_shadowColorRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT,
+		color
 	);
 
 	m_dirLight.direction = { 0.577f, 0.577f, -0.577f, 0.0f };
@@ -217,7 +256,9 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	//法線
 	spriteInitData.m_textures[1] = &m_normalRT.GetRenderTargetTexture();
 	//深度
-	spriteInitData.m_textures[2] = &m_depthRT.GetRenderTargetTexture();
+	//spriteInitData.m_textures[2] = &m_depthRT.GetRenderTargetTexture();
+	//ワールド座標
+	spriteInitData.m_textures[2] = &m_shadowColorRT.GetRenderTargetTexture();
 	//ディファードレンダリング専用のシェーダー使う
 	spriteInitData.m_fxFilePath = "Assets/shader/deferred.fx";
 	spriteInitData.m_expandConstantBuffer = &m_dirLight;
@@ -230,6 +271,8 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	m_copyMainRtToFrameBufferSprite.Init(spriteInitData);
 
 	m_postEffect.Init();
+
+	m_shadowMap = new ShadowMap();
 	return true;
 }
 
@@ -504,17 +547,33 @@ void GraphicsEngine::BeginRender()
 
 }
 
+void GraphicsEngine::RendertoShadow()
+{
+	m_shadowMap->UpdateFromLightTaraget(Vector3(-100.0f, 100.0f, -100.0f), Vector3(0.0f, 0.0f, 0.0f));
+	m_shadowMap->RenderToShadowMap(m_renderContext);
+}
+
 void GraphicsEngine::BeginDeferredRender()
 {
+	RenderTarget* rt[] = {
+		m_shadowMap->GetRenderTarget()
+	};
+
 	//レンダリングターゲットを設定
 	RenderTarget* rts[] = {
 		&m_albedRT,
-		&m_normalRT
+		&m_normalRT,
+		&m_shadowColorRT
 	};
 
-	m_renderContext.WaitUntilToPossibleSetRenderTargets(2, rts);
-	m_renderContext.SetRenderTargets(2, rts);
-	m_renderContext.ClearRenderTargetViews(2, rts);
+	//シャドウマップをシェーダーリソースビューとして使用したいので描き込み完了待ちする
+	m_renderContext.WaitUntilFinishDrawingToRenderTargets(1, rt);
+
+	//G-Bufferのための３つのレンダリングターゲットを待機完了状態にする
+	m_renderContext.WaitUntilToPossibleSetRenderTargets(3, rts);
+
+	m_renderContext.SetRenderTargets(3, rts);
+	m_renderContext.ClearRenderTargetViews(3, rts);
 }
 
 void GraphicsEngine::EndModelDraw()
@@ -522,26 +581,30 @@ void GraphicsEngine::EndModelDraw()
 	//レンダリングターゲットを設定
 	RenderTarget* rts[] = {
 		&m_albedRT,
-		&m_normalRT
+		&m_normalRT,
+		&m_shadowColorRT
 	};
-	m_renderContext.WaitUntilFinishDrawingToRenderTargets(2, rts);
-
-	//ChangeRenderTargetToFrameBuffer(m_renderContext);
+	m_renderContext.WaitUntilFinishDrawingToRenderTargets(3, rts);
 
 	RenderTarget* rt[] = {
 		&m_mainRenderTarget
 	};
 
+	m_renderContext.WaitUntilToPossibleSetRenderTargets(1, rt);
 	SetRenderTarget(1, rt);
+	m_renderContext.ClearRenderTargetViews(1, rt);
 	m_defferdSprite.Draw(m_renderContext);
 }
 
 void GraphicsEngine::RendertoPostEffect()
 {
+	//ポストエフェクトかけて(メインレンダリングターゲットに)
 	m_postEffect.Render(m_renderContext);
 
+	//レンダリングターゲットをフレームバッファにして
 	ChangeRenderTargetToFrameBuffer(m_renderContext);
 
+	//フレームバッファにドローする
 	m_copyMainRtToFrameBufferSprite.Draw(m_renderContext);
 }
 

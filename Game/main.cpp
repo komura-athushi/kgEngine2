@@ -42,6 +42,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ModelRender modelRender2;
 	modelRender2.Init("Assets/modelData/box3.tkm");
 	modelRender2.SetPosition(Vector3(0.0f, 0.0f, -180.0f));
+
+	ModelRender modelRender3;
+	modelRender3.Init("Assets/modelData/box4.tkm");
+	modelRender3.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
 	//ModelRender box;
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
@@ -51,23 +55,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリング開始。
 		g_graphicsEngine->BeginRender();
 
-		//model.Draw(renderContext);
+		modelRender3.Update();
 
-		RenderTarget* rt[] = {
-			&g_graphicsEngine->GetMainRenderTarget()
-		};
+		modelRender2.Update();
 
-		g_graphicsEngine->SetRenderTarget(1, rt);
+		modelRender.Update();
 
-		sprite.Draw(g_graphicsEngine->GetRenderContext());
+	
+
+		g_graphicsEngine->RendertoShadow();
 
 		g_graphicsEngine->BeginDeferredRender();
 
-		modelRender2.Update();
 		modelRender2.Draw();
-
-		modelRender.Update();
 		modelRender.Draw();
+		modelRender3.Draw();
 
 		if (a >= 200) {
 			//modelRender.PlayAnimation(0, 0.0f);
@@ -85,6 +87,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		
 
 		g_graphicsEngine->RendertoPostEffect();
+		
 
 		//レンダリング終了。
 		g_graphicsEngine->EndRender();

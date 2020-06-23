@@ -1,6 +1,8 @@
 #pragma once
 
 #include "tkFile/TkmFile.h"
+#include "RenderMode.h"
+
 /// <summary>
 /// マテリアル。
 /// </summary>
@@ -20,7 +22,7 @@ public:
 	/// </summary>
 	/// <param name="rc">レンダリングコンテキスト</param>
 	/// <param name="hasSkin">スキンがあるかどうかのフラグ</param>
-	void BeginRender(RenderContext& rc, int hasSkin);
+	void BeginRender(RenderContext& rc, int hasSkin, EnRenderMode renderMode);
 
 	/// <summary>
 	/// アルベドマップを取得。
@@ -89,9 +91,14 @@ private:
 	RootSignature m_rootSignature;				//ルートシグネチャ。
 	PipelineState m_nonSkinModelPipelineState;	//スキンなしモデル用のパイプラインステート。
 	PipelineState m_skinModelPipelineState;		//スキンありモデル用のパイプラインステート。
+	PipelineState m_nonSkinModelShadowMapPipelineState;	//シャドウマップ生成用のスキンなしモデル用のパイプラインステート。
+	PipelineState m_skinModelShadowMapPipelineState;		//シャドウマップ生成用のスキンありモデル用のパイプラインステート。
 	Shader m_vsNonSkinModel;					//スキンなしモデル用の頂点シェーダー。
 	Shader m_vsSkinModel;						//スキンありモデル用の頂点シェーダー。
 	Shader m_psModel;							//モデル用のピクセルシェーダー。
+	Shader m_vsNonSkinShadowMap;				//シャドウマップ生成用のスキン無しモデルの頂点シェーダー
+	Shader m_vsSkinShadowMap;					//シャドウマップ生成用のスキンありモデルの頂点シェーダー
+	Shader m_psShadowMap;						//シャドウマップ生成用のピクセルシェーダー
 };
 
 

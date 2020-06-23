@@ -18,6 +18,8 @@
 
 #include "PostEffect\PostEffect.h"
 
+#include "shadow/ShadowMap.h"
+
 #include "Camera.h"
 
 /// <summary>
@@ -67,6 +69,10 @@ public:
 	/// ポストエフェクトかける
 	/// </summary>
 	void RendertoPostEffect();
+	/// <summary>
+	/// シャドウマップを描画する
+	/// </summary>
+	void RendertoShadow();
 	/// <summary>
 	/// レンダリングターゲットをフレームバッファに変更する。
 	/// </summary>
@@ -148,6 +154,10 @@ public:
 	RenderTarget& GetMainRenderTarget()
 	{
 		return m_mainRenderTarget;
+	}
+	ShadowMap* GetShadowMap()
+	{
+		return m_shadowMap;
 	}
 private:
 	/// <summary>
@@ -255,16 +265,19 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE m_currentFrameBufferDSVHandle;		//現在書き込み中のフレームバッファの深度ステンシルビューのハンドル
 	RenderTarget m_albedRT;				//アルベドマップ
 	RenderTarget m_normalRT;			//法線マップ
+	RenderTarget m_worldPosRT;			//ワールド座標マップ
+	RenderTarget m_shadowColorRT;		//影を落とす場所を決めるマップ
 	RenderTarget m_depthRT;				//深値マップ
 	Sprite m_defferdSprite;				//ディファードレンダリングの為のテクスチャ
 	struct SDirectionLight {
 		Vector4 direction;		//ライトの方向。
 		Vector4 lightcolor;			//ライトのカラー。
 	};
-	SDirectionLight m_dirLight;
-	RenderTarget m_mainRenderTarget;
-	PostEffect m_postEffect;
-	Sprite m_copyMainRtToFrameBufferSprite;
+	SDirectionLight m_dirLight;			//ライト
+	RenderTarget m_mainRenderTarget;	//メインレンダリングターゲット
+	PostEffect m_postEffect;			//ポストエフェクト
+	Sprite m_copyMainRtToFrameBufferSprite;		//メインレンダリングターゲットをコピーするためのスプライト
+	ShadowMap* m_shadowMap = nullptr;
 };
 
 extern GraphicsEngine* g_graphicsEngine;	//グラフィックスエンジン

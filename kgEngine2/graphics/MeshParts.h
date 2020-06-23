@@ -6,7 +6,7 @@
 
 #include "tkFile/TkmFile.h"
 #include "StructuredBuffer.h"
-
+#include "RenderMode.h"
 class RenderContext;
 class Skeleton;
 class Material;
@@ -55,12 +55,28 @@ public:
 	/// <param name="mView">ビュー行列</param>
 	/// <param name="mProj">プロジェクション行列</param>
 	/// <param name="light">ライト</param>
-	void Draw(RenderContext& rc, const Matrix& mWorld, const Matrix& mView, const Matrix& mProj);
+	void Draw(RenderContext& rc, const Matrix& mWorld, const Matrix& mView, const Matrix& mProj,EnRenderMode renderMode);
 	/// <summary>
 	/// スケルトンを関連付ける。
 	/// </summary>
 	/// <param name="skeleton">スケルトン</param>
-	void BindSkeleton(Skeleton& skeleton) ;
+	void BindSkeleton(Skeleton& skeleton);
+	/// <summary>
+	/// シャドウレシーバーのフラグを設定
+	/// </summary>
+	/// <param name="isFlag"></param>
+	void SetShadowReciever(bool isFlag)
+	{
+		m_isShadowReciever = isFlag;
+	}
+	/// <summary>
+	/// シャドウレシーバーかどうかを取得
+	/// </summary>
+	/// <returns></returns>
+	bool GetShadowReciever()
+	{
+		return m_isShadowReciever;
+	}
 private:
 	/// <summary>
 	/// tkmメッシュからメッシュを作成。
@@ -92,6 +108,9 @@ private:
 		Matrix mWorld;		//ワールド行列。
 		Matrix mView;		//ビュー行列。
 		Matrix mProj;		//プロジェクション行列。
+		Matrix mLightView;		//ライトビュー行列
+		Matrix mLightProj;		//ライトプロジェクション行列
+		int isShadowReciever;	//シャドウレシーバーのフラグ
 	};
 	ConstantBuffer m_commonConstantBuffer;				//メッシュ共通の定数バッファ。
 	ConstantBuffer m_expandConstantBuffer;				//ユーザー拡張用の定数バッファ
@@ -101,4 +120,6 @@ private:
 	Skeleton* m_skeleton = nullptr;	//スケルトン。
 	void* m_expandData = nullptr;	//ユーザー拡張データ。
 	bool m_isInitDescriptorHeap = false;	//ディスクリプタヒープを初期化したか？
+	bool m_isShadowReciever = true;		//シャドウレシーバーのフラグ
+
 };

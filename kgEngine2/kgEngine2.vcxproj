@@ -49,6 +49,7 @@
     <ClCompile Include="math\Vector.cpp" />
     <ClCompile Include="graphics\ModelRender.cpp" />
     <ClCompile Include="graphics\Primitive.cpp" />
+    <ClCompile Include="graphics\shadow\ShadowMap.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tkFile\TkaFile.cpp" />
     <ClCompile Include="tkFile\TkmFile.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="graphics\PostEffect\PostEffect.h" />
     <ClInclude Include="graphics\RenderContext.h" />
     <ClInclude Include="graphics\RenderContext_inline.h" />
+    <ClInclude Include="graphics\RenderMode.h" />
     <ClInclude Include="graphics\RenderTarget.h" />
     <ClInclude Include="graphics\RootSignature.h" />
     <ClInclude Include="graphics\RWStructuredBuffer.h" />
@@ -92,6 +94,7 @@
     <ClInclude Include="math\Vector.h" />
     <ClInclude Include="graphics\ModelRender.h" />
     <ClInclude Include="graphics\Primitive.h" />
+    <ClInclude Include="graphics\shadow\ShadowMap.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tkFile\TkaFile.h" />
     <ClInclude Include="tkFile\TkmFile.h" />

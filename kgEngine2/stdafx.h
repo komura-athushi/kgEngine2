@@ -52,3 +52,4 @@ const UINT FRAME_BUFFER_W = 1280;				//フレームバッファの幅。
 const UINT FRAME_BUFFER_H = 720;				//フレームバッファの高さ。
 
 static const int MAX_BONE = 512;	//!<ボーンの最大数。
+

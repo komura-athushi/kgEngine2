@@ -2,6 +2,7 @@
 #include "MeshParts.h"
 #include "Skeleton.h"
 #include "Material.h"
+#include "shadow/ShadowMap.h"
 
 MeshParts::~MeshParts()
 {
@@ -66,6 +67,7 @@ void MeshParts::CreateDescriptorHeaps()
 			descriptorHeap.RegistShaderResource(1, mesh->m_materials[matNo]->GetNormalMap());		//法線マップ。
 			descriptorHeap.RegistShaderResource(2, mesh->m_materials[matNo]->GetSpecularMap());	//スペキュラマップ。
 			descriptorHeap.RegistShaderResource(3, m_boneMatricesStructureBuffer);	//ボーン
+			descriptorHeap.RegistShaderResource(4, g_graphicsEngine->GetShadowMap()->GetShadowMapTexture());  //シャドウマップ
 			descriptorHeap.RegistConstantBuffer(0, m_commonConstantBuffer);
 			if (m_expandConstantBuffer.IsValid()) {
 				descriptorHeap.RegistConstantBuffer(1, m_expandConstantBuffer);
@@ -157,7 +159,8 @@ void MeshParts::Draw(
 	RenderContext& rc,
 	const Matrix& mWorld,
 	const Matrix& mView,
-	const Matrix& mProj
+	const Matrix& mProj,
+	EnRenderMode renderMode
 )
 {
 #if 1
@@ -170,11 +173,30 @@ void MeshParts::Draw(
 	//プリミティブのトポロジーはトライアングルリストのみ。
 	rc.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	auto shadowMap = g_graphicsEngine->GetShadowMap();
 	//定数バッファを更新する。
 	SConstantBuffer cb;
 	cb.mWorld = mWorld;
-	cb.mView = mView;
-	cb.mProj = mProj;
+	if (renderMode == enRenderMode_CreateShadowMap) {
+		cb.mView = shadowMap->GetLightViewMatrix();
+		cb.mProj = shadowMap->GetLightProjMatrix();
+		cb.mView = mView;
+		cb.mProj = mProj;
+	}
+	else {
+		cb.mView = mView;
+		cb.mProj = mProj;
+	}
+
+	if (m_isShadowReciever) {
+		cb.isShadowReciever = 1;
+	}
+	else {
+		cb.isShadowReciever = 0;
+	}
+
+	cb.mLightProj = shadowMap->GetLightProjMatrix();
+	cb.mLightView = shadowMap->GetLightViewMatrix();
 
 	m_commonConstantBuffer.CopyToVRAM(&cb);
 
@@ -185,6 +207,9 @@ void MeshParts::Draw(
 		//ボーン行列を更新する。
 		m_boneMatricesStructureBuffer.Update(m_skeleton->GetBoneMatricesTopAddress());
 	}
+
+	
+
 	int descriptorHeapNo = 0;
 	for (auto& mesh : m_meshs) {
 		//頂点バッファを設定。
@@ -192,7 +217,7 @@ void MeshParts::Draw(
 		//マテリアルごとにドロー。
 		for (int matNo = 0; matNo < mesh->m_materials.size(); matNo++) {
 			//このマテリアルが貼られているメッシュの描画開始。
-			mesh->m_materials[matNo]->BeginRender(rc, mesh->skinFlags[matNo]);
+			mesh->m_materials[matNo]->BeginRender(rc, mesh->skinFlags[matNo], renderMode);
 			//ディスクリプタヒープを登録。
 			rc.SetDescriptorHeap(m_descriptorHeap.at(descriptorHeapNo));
 			//インデックスバッファを設定。

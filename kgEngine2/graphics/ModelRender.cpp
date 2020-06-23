@@ -24,6 +24,7 @@ void ModelRender::Init(const char* filePath,
 	initData.m_tkmFilePath = filePath;
 	//シェーダーは今んとこmodel.fxで固定するのです
 	initData.m_fxFilePath = "Assets/shader/model.fx";
+
 	m_model.Init(initData);
 
 	//アニメーションの初期化
@@ -53,11 +54,15 @@ void ModelRender::Update()
 	//モデルのワールド行列を更新
 	m_model.UpdateWorldMatrix(m_position,m_rotation,m_scale);
 	m_animation.Update(1.0f / 60.0f);
+
+	if (m_model.GetShadowCaster()) {
+		g_graphicsEngine->GetShadowMap()->RegistShadowCaster(&m_model);
+	}
 }
 
 void ModelRender::Draw()
 {
 	auto& renderContext = g_graphicsEngine->GetRenderContext();
 	//モデルをドロー
-	m_model.Draw(renderContext);
+	m_model.Draw(renderContext,enRenderMode_Normal);
 }

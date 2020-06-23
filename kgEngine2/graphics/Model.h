@@ -3,7 +3,7 @@
 #include "tkFile/TkmFile.h"
 #include "MeshParts.h"
 #include "Skeleton.h"
-
+#include "RenderMode.h"
 
 template <class TExpandData> struct ModelExpandDataInfo {
 	TExpandData* m_expandData = nullptr;
@@ -18,6 +18,9 @@ struct ModelInitData {
 	void* m_expandConstantBuffer = nullptr;		//ユーザー拡張の定数バッファ。
 	int m_expandConstantBufferSize = 0;			//ユーザー拡張の定数バッファのサイズ。
 };
+
+
+
 /// <summary>
 /// モデルクラス。
 /// </summary>
@@ -60,7 +63,7 @@ public:
 	/// 描画
 	/// </summary>
 	/// <param name="renderContext">レンダリングコンテキスト</param>
-	void Draw(RenderContext& renderContext);
+	void Draw(RenderContext& renderContext,EnRenderMode renderMode = enRenderMode_Normal);
 	/// <summary>
 	/// ワールド行列を取得。
 	/// </summary>
@@ -74,6 +77,38 @@ public:
 	{
 		return m_skeleton;
 	}
+	/// <summary>
+	/// シャドウレシーバーのフラグを設定
+	/// </summary>
+	/// <param name="isFlag"></param>
+	void SetShadowReciever(bool isFlag)
+	{
+		m_meshParts.SetShadowReciever(isFlag);
+	}
+	/// <summary>
+	/// シャドウレシーバーかどうかを取得
+	/// </summary>
+	/// <returns></returns>
+	bool GetShadowReciever()
+	{
+		return m_meshParts.GetShadowReciever();
+	}
+	/// <summary>
+	/// シャドウキャスターのフラグを設定
+	/// </summary>
+	/// <param name="isFlag"></param>
+	void SetShadowCaster(bool isFlag)
+	{
+		m_isShadowCaster = isFlag;
+	}
+	/// <summary>
+	/// シャドウキャスターかどうかを取得
+	/// </summary>
+	/// <returns></returns>
+	bool GetShadowCaster()
+	{
+		return m_isShadowCaster;
+	}
 private:
 	void InitSkeleton(const char* filePath);
 
@@ -82,4 +117,5 @@ private:
 	TkmFile m_tkmFile;		//tkmファイル。
 	Skeleton m_skeleton;	//スケルトン。
 	MeshParts m_meshParts;	//メッシュパーツ。
+	bool m_isShadowCaster = true;
 };
