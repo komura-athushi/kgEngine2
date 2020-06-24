@@ -4,23 +4,25 @@
 
 ShadowMap::ShadowMap()
 {
-	/*m_shadowMapRT.Create(
+	m_shadowMapRT.Create(
 		4096,
 		4096,
 		1,
 		1,
 		DXGI_FORMAT_R32_FLOAT,
 		DXGI_FORMAT_D32_FLOAT
-	);*/
+	);
 
+	/*float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_shadowMapRT.Create(
 		FRAME_BUFFER_W,
 		FRAME_BUFFER_H,
 		1,
 		1,
 		DXGI_FORMAT_R32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT
-	);
+		DXGI_FORMAT_D32_FLOAT,
+		clearColor
+	);*/
 }
 
 void ShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Vector3& lightDir)
@@ -43,8 +45,8 @@ void ShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Ve
 	);
 
 	m_lightProjMatrix.MakeOrthoProjectionMatrix(
-		300,
-		300,
+		500,
+		500,
 		10.0f,
 		1500.0f
 	);
@@ -75,17 +77,21 @@ void ShadowMap::RenderToShadowMap(RenderContext& rc)
 	};
 	//シャドウマップのレンダリングターゲットを待機完了状態にする
 	rc.WaitUntilToPossibleSetRenderTargets(1, rt);
-	rc.SetRenderTargetAndViewport(m_shadowMapRT);
-	const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	rc.ClearRenderTargetView(m_shadowMapRT, clearColor);
+	//rc.SetRenderTarget(g_graphicsEngine->GetDSVCpuDescriptorHandle(), m_shadowMapRT.GetRTVCpuDescriptorHandle());
+	//rc.SetRenderTargetAndViewport(m_shadowMapRT);
+	rc.SetRenderTargets(1, rt);
+	rc.ClearRenderTargetViews(1, rt);
+	//g_graphicsEngine->BeginDeferredRender();
 
 	if (m_shadowCaters.size() >= 1) {
 		for (auto caster : m_shadowCaters) {
-			caster->Draw(g_graphicsEngine->GetRenderContext(),enRenderMode_CreateShadowMap);
+			caster->Draw(rc,enRenderMode_CreateShadowMap);
 		}
 	}
 
 	m_shadowCaters.clear();
+
+	//g_graphicsEngine->EndModelDraw();
 
 	g_graphicsEngine->ChangeRenderTargetToFrameBuffer(g_graphicsEngine->GetRenderContext());
 }

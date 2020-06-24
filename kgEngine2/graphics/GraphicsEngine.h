@@ -159,6 +159,11 @@ public:
 	{
 		return m_shadowMap;
 	}
+	//フレームバッファの深度ステンシルビューを取得
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVCpuDescriptorHandle()
+	{
+		return m_currentFrameBufferDSVHandle;
+	}
 private:
 	/// <summary>
 	/// D3Dデバイスの作成。

@@ -244,7 +244,7 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	);
 
 	m_dirLight.direction = { 0.577f, 0.577f, -0.577f, 0.0f };
-	m_dirLight.lightcolor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	m_dirLight.lightcolor = { 0.5f, 0.5f, 0.5f, 0.5f };
 
 	//ディファードレンダリング用のテクスチャを作成しまーす
 	//テクスチャデータの設定をする
@@ -549,7 +549,8 @@ void GraphicsEngine::BeginRender()
 
 void GraphicsEngine::RendertoShadow()
 {
-	m_shadowMap->UpdateFromLightTaraget(Vector3(-100.0f, 100.0f, -100.0f), Vector3(0.0f, 0.0f, 0.0f));
+	m_shadowMap->UpdateFromLightTaraget(Vector3(300.0f, 300.0f, 300.0f), Vector3(0.0f, 0.0f, 0.0f));
+	//m_shadowMap->UpdateFromLightTaraget(g_camera3D->GetPosition(), g_camera3D->GetTarget());
 	m_shadowMap->RenderToShadowMap(m_renderContext);
 }
 

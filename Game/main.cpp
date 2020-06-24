@@ -46,6 +46,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ModelRender modelRender3;
 	modelRender3.Init("Assets/modelData/box4.tkm");
 	modelRender3.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+	modelRender3.SetShadowCaster(false);
 	//ModelRender box;
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;

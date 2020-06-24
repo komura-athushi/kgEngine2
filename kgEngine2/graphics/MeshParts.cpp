@@ -180,13 +180,17 @@ void MeshParts::Draw(
 	if (renderMode == enRenderMode_CreateShadowMap) {
 		cb.mView = shadowMap->GetLightViewMatrix();
 		cb.mProj = shadowMap->GetLightProjMatrix();
-		cb.mView = mView;
-		cb.mProj = mProj;
+		//cb.mView = mView;
+		//cb.mProj = mProj;
 	}
 	else {
 		cb.mView = mView;
 		cb.mProj = mProj;
 	}
+	cb.mLightView = shadowMap->GetLightViewMatrix();
+	cb.mLightProj = shadowMap->GetLightProjMatrix();
+	//cb.mLightView = mView;
+	//cb.mProj = mProj;
 
 	if (m_isShadowReciever) {
 		cb.isShadowReciever = 1;
@@ -195,8 +199,7 @@ void MeshParts::Draw(
 		cb.isShadowReciever = 0;
 	}
 
-	cb.mLightProj = shadowMap->GetLightProjMatrix();
-	cb.mLightView = shadowMap->GetLightViewMatrix();
+
 
 	m_commonConstantBuffer.CopyToVRAM(&cb);
 

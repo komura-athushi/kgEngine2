@@ -187,6 +187,13 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 	spsOut.normal.xyz = psIn.normal;
 	spsOut.normal.w = 1.0f;
 	spsOut.shadow = float4(1.0f,1.0f,1.0f,1.0f);
+
+	//シャドウマップに書き込まれている深度値を取得。
+	/*float2 shadowMapUV = psIn.posInLVP.xy / psIn.posInLVP.w;
+	shadowMapUV *= float2(0.5f, -0.5f);
+	shadowMapUV += 0.5f;
+	float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
+	spsOut.shadow = zInShadowMap;*/
 	if (isShadowReciever == 1) {	//シャドウレシーバー。
 		//LVP空間から見た時の最も手前の深度値をシャドウマップから取得する。
 		//プロジェクション行列をシャドウマップのUV座標に変換している
@@ -210,6 +217,7 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 			}
 		}
 	}
+		
 
 	return spsOut;
 }
@@ -244,6 +252,6 @@ PSInput_ShadowMap VSMainSkin_ShadowMap(SVSIn In)
 float4 PSMain_ShadowMap(PSInput_ShadowMap In) : SV_Target0
 {
 	//射影空間でのZ値を返す
-	//return In.Position.z / In.Position.w;
-	return 0.1f;
+	return In.Position.z / In.Position.w;
+	//return 0.1f;
 }

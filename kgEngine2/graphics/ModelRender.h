@@ -46,6 +46,16 @@ public:
 	void Update();
 	//モデルをドローする
 	void Draw();
+	//シャドウキャスターを設定
+	void SetShadowCaster(bool flag)
+	{
+		m_model.SetShadowCaster(flag);
+	}
+	//シャドウレシーバーを設定
+	void SetShadowReciever(bool flag)
+	{
+		m_model.SetShadowReciever(flag);
+	}
 private:
 	Model m_model;										//モデル
 	Animation m_animation;								//アニメーション
