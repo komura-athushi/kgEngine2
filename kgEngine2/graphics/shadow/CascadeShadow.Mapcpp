@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "ShadowMap.h"
+#include "CascadeShadowMap.h"
 #include "graphics/Model.h"
 
-ShadowMap::ShadowMap()
+CascadeShadowMap::CascadeShadowMap()
 {
 	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	m_shadowMapRT.Create(
@@ -27,7 +27,7 @@ ShadowMap::ShadowMap()
 	);*/
 }
 
-void ShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Vector3& lightDir)
+void CascadeShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Vector3& lightDir)
 {
 	//ライトの方向によって、ライトカメラの上方向を決める
 	Vector3 lightCameraUpAxis;
@@ -55,7 +55,7 @@ void ShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Ve
 
 }
 
-void ShadowMap::UpdateFromLightTaraget(const Vector3& lightCameraPos,const Vector3& lightCameraTarget)
+void CascadeShadowMap::UpdateFromLightTaraget(const Vector3& lightCameraPos,const Vector3& lightCameraTarget)
 {
 	m_lightCameraPosition = lightCameraPos;
 	m_lightCamerataraget = lightCameraTarget;
@@ -72,7 +72,7 @@ void ShadowMap::UpdateFromLightTaraget(const Vector3& lightCameraPos,const Vecto
 	UpdateFromLightDirection(lightCameraPos, lightDir);
 }
 
-void ShadowMap::RenderToShadowMap(RenderContext& rc)
+void CascadeShadowMap::RenderToShadowMap(RenderContext& rc)
 {
 	RenderTarget* rt[] = {
 		&m_shadowMapRT

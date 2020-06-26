@@ -66,8 +66,8 @@ void MeshParts::CreateDescriptorHeaps()
 			descriptorHeap.RegistShaderResource(0, mesh->m_materials[matNo]->GetAlbedoMap());		//アルベドマップ。
 			descriptorHeap.RegistShaderResource(1, mesh->m_materials[matNo]->GetNormalMap());		//法線マップ。
 			descriptorHeap.RegistShaderResource(2, mesh->m_materials[matNo]->GetSpecularMap());	//スペキュラマップ。
-			descriptorHeap.RegistShaderResource(3, m_boneMatricesStructureBuffer);	//ボーン
-			descriptorHeap.RegistShaderResource(4, g_graphicsEngine->GetShadowMap()->GetShadowMapTexture());  //シャドウマップ
+			descriptorHeap.RegistShaderResource(3, g_graphicsEngine->GetShadowMap()->GetShadowMapTexture());  //シャドウマップ
+			descriptorHeap.RegistShaderResource(4, m_boneMatricesStructureBuffer);	//ボーン
 			descriptorHeap.RegistConstantBuffer(0, m_commonConstantBuffer);
 			if (m_expandConstantBuffer.IsValid()) {
 				descriptorHeap.RegistConstantBuffer(1, m_expandConstantBuffer);
@@ -183,9 +183,11 @@ void MeshParts::Draw(
 		//cb.mView = mView;
 		//cb.mProj = mProj;
 	}
-	else {
+	else if(renderMode == enRenderMode_Normal){
 		cb.mView = mView;
 		cb.mProj = mProj;
+		//cb.mView = shadowMap->GetLightViewMatrix();
+		//cb.mProj = shadowMap->GetLightProjMatrix();
 	}
 	cb.mLightView = shadowMap->GetLightViewMatrix();
 	cb.mLightProj = shadowMap->GetLightProjMatrix();

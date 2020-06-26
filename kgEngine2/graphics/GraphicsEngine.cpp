@@ -161,7 +161,7 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	m_camera2D.SetPosition({0.0f, 0.0f, 1.0f});
 	m_camera2D.SetTarget({ 0.0f, 0.0f, 0.0f });
 
-	m_camera3D.SetPosition({200.0f, 200.0f, 200.0f} );
+	m_camera3D.SetPosition({-200.0f, 100.0f, 200.0f} );
 	m_camera3D.SetTarget({ 0.0f, 0.0f, 0.0f });
 
 	g_camera2D = &m_camera2D;
@@ -189,10 +189,12 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		FRAME_BUFFER_H,
 		1,
 		1,
-		DXGI_FORMAT_B8G8R8A8_UNORM,
+		DXGI_FORMAT_R16G16B16A16_FLOAT,
 		DXGI_FORMAT_D32_FLOAT,
-		color2
+		color
 	);
+
+	m_albedRT.SetClearColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	m_normalRT.Create(
 		FRAME_BUFFER_W,
@@ -220,7 +222,7 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		1,
 		1,
 		DXGI_FORMAT_R16G16B16A16_FLOAT,
-		DXGI_FORMAT_D32_FLOAT,
+		DXGI_FORMAT_UNKNOWN,
 		color
 	);
 
@@ -239,9 +241,11 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 		1,
 		1,
 		DXGI_FORMAT_R32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT,
+		DXGI_FORMAT_UNKNOWN,
 		color
 	);
+
+	m_shadowColorRT.SetClearColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
 	m_dirLight.direction = { 0.577f, 0.577f, -0.577f, 0.0f };
 	m_dirLight.lightcolor = { 0.5f, 0.5f, 0.5f, 0.5f };
@@ -549,7 +553,7 @@ void GraphicsEngine::BeginRender()
 
 void GraphicsEngine::RendertoShadow()
 {
-	m_shadowMap->UpdateFromLightTaraget(Vector3(300.0f, 300.0f, 300.0f), Vector3(0.0f, 0.0f, 0.0f));
+	m_shadowMap->UpdateFromLightTaraget(Vector3(00.0f, 300.0f, 00.0f), Vector3(0.0f, 0.0f, 0.0f));
 	//m_shadowMap->UpdateFromLightTaraget(g_camera3D->GetPosition(), g_camera3D->GetTarget());
 	m_shadowMap->RenderToShadowMap(m_renderContext);
 }
@@ -574,6 +578,7 @@ void GraphicsEngine::BeginDeferredRender()
 	m_renderContext.WaitUntilToPossibleSetRenderTargets(3, rts);
 
 	m_renderContext.SetRenderTargets(3, rts);
+	m_renderContext.SetViewport(m_albedRT);
 	m_renderContext.ClearRenderTargetViews(3, rts);
 }
 

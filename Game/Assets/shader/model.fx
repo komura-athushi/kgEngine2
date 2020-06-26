@@ -36,8 +36,7 @@ struct SVSIn {
 	//float4 weights  : BLENDWEIGHT0;
 }*/
 
-//ボーン行列
-StructuredBuffer<float4x4> boneMatrix : register(t3);
+
 //StructuredBuffer boneMatrix : register(t1);
 
 //ピクセルシェーダーへの入力。
@@ -60,7 +59,7 @@ struct PSInput_ShadowMap {
 struct SPSOut {
 	float4 albedo : SV_Target0;		//アルベド
 	float4 normal : SV_Target1;		//法線
-	float4 shadow : SV_Target2;		//シャドウ
+	float shadow : SV_Target2;		//シャドウ
 };
 
 //モデルテクスチャ。
@@ -70,7 +69,9 @@ Texture2D<float4> g_normal : register(t1);
 //スペキュラマップ
 Texture2D<float4> g_specularMap : register(t2);
 //シャドウマップ
-Texture2D<float4> g_shadowMap : register(t4);
+Texture2D<float4> g_shadowMap : register(t3);
+//ボーン行列
+StructuredBuffer<float4x4> boneMatrix : register(t4);
 
 //サンプラステート。
 sampler g_sampler : register(s0);
@@ -97,7 +98,7 @@ float4x4 CalcSkinMatrix(SVSIn vsIn)
 /// <summary>
 /// モデル用の頂点シェーダーのエントリーポイント。
 /// </summary>
-SPSIn VSMain(SVSIn vsIn, uniform bool hasSkin)
+SPSIn VSMain(SVSIn vsIn)
 {
 	SPSIn psIn;
 	
@@ -186,21 +187,16 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 	spsOut.albedo = finalColor;
 	spsOut.normal.xyz = psIn.normal;
 	spsOut.normal.w = 1.0f;
-	spsOut.shadow = float4(1.0f,1.0f,1.0f,1.0f);
-
-	//シャドウマップに書き込まれている深度値を取得。
-	/*float2 shadowMapUV = psIn.posInLVP.xy / psIn.posInLVP.w;
-	shadowMapUV *= float2(0.5f, -0.5f);
-	shadowMapUV += 0.5f;
-	float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
-	spsOut.shadow = zInShadowMap;*/
+	
+	spsOut.shadow = 1.0f;
+	//spsOut.shadow = color.x;
 	if (isShadowReciever == 1) {	//シャドウレシーバー。
 		//LVP空間から見た時の最も手前の深度値をシャドウマップから取得する。
 		//プロジェクション行列をシャドウマップのUV座標に変換している
 		float2 shadowMapUV = psIn.posInLVP.xy / psIn.posInLVP.w;
 		shadowMapUV *= float2(0.5f, -0.5f);
 		shadowMapUV += 0.5f;
-	
+		//spsOut.shadow = shadowMapUV.x;
 		//シャドウマップのUV座標範囲内かどうかを判定する。
 		if (shadowMapUV.x < 1.0f
 			&& shadowMapUV.x > 0.0f
@@ -213,7 +209,10 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 			float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV);
 			if (zInLVP > zInShadowMap + 0.001f) {
 				//影が落ちているので、光を弱くする
-				spsOut.shadow = float4(0.5f,0.5f,0.5f,1.0f);
+				spsOut.shadow = 0.5f;
+			//	spsOut.shadow = zInShadowMap;
+				//spsOut.shadow = zInLVP;
+				//spsOut.shadow = psIn.pos.z / psIn.pos.w;
 			}
 		}
 	}
@@ -228,8 +227,10 @@ PSInput_ShadowMap VSMain_ShadowMap(SVSIn In)
 {
 	PSInput_ShadowMap psInput = (PSInput_ShadowMap)0;
 	float4 pos = mul(mWorld, In.pos);
-	pos = mul(mView, pos);
-	pos = mul(mProj, pos);
+	pos = mul(mLightView, pos);
+	pos = mul(mLightProj, pos);
+	//pos = mul(mView, pos);
+	//pos = mul(mProj, pos);
 	psInput.Position = pos;
 	return psInput;
 }
@@ -241,8 +242,10 @@ PSInput_ShadowMap VSMainSkin_ShadowMap(SVSIn In)
 	PSInput_ShadowMap psInput = (PSInput_ShadowMap)0;
 	float4x4 skinning = CalcSkinMatrix(In);
 	float4 pos = mul(skinning, In.pos);
-	pos = mul(mView, pos);
-	pos = mul(mProj, pos);
+	pos = mul(mLightView, pos);
+	pos = mul(mLightProj, pos);
+	//pos = mul(mView, pos);
+	//pos = mul(mProj, pos);
 	psInput.Position = pos;
 	return psInput;
 }

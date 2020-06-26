@@ -78,14 +78,14 @@ public:
 	/// <summary>
 	/// ビュー行列を取得。
 	/// </summary>
-	const Matrix& GetViewMatrix() const
+	const Matrix GetViewMatrix() const
 	{
 		return m_viewMatrix;
 	}
 	/// <summary>
 	/// プロジェクション行列を取得。
 	/// </summary>
-	const Matrix& GetProjectionMatrix() const
+	const Matrix GetProjectionMatrix() const
 	{
 		return m_projectionMatrix;
 	}
