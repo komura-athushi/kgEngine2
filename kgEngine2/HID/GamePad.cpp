@@ -8,6 +8,8 @@
 #define INPUT_DEADZONE  ( 0.24f * FLOAT(0x7FFF) )  // Default to 24% of the +/- 32767 range.   This is a reasonable default value but can be altered if needed.
 
 
+GamePad g_gamePad;
+
 namespace {
 	/*!
 	*@brief	仮想ボタンとXBoxコントローラのボタンとの関連付けを表す構造体。

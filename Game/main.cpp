@@ -3,6 +3,7 @@
 #include "graphics/Model.h"
 #include "graphics/GraphicsEngine.h"
 #include "graphics/ModelRender.h"
+#include "HID/GamePad.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
@@ -49,14 +50,35 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	ModelRender modelRender4;
 	modelRender4.Init("Assets/modelData/box5.tkm");
-	modelRender4.SetPosition(Vector3(0.0f, 120.0f, 0.0f));
+	modelRender4.SetPosition(Vector3(0.0f, 600.0f, 500.0f));
+
+	ModelRender modelRender5;
+	modelRender5.Init("Assets/modelData/box5.tkm");
+	modelRender5.SetPosition(Vector3(500.0f, 00.0f, -300.0f));
+
+	g_gamePad.Init(0);
 	//modelRender3.SetShadowCaster(false);
 	//ModelRender box;
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
 	// ここからゲームループ。
+	Vector3 pos = Vector3(400.0f, 500.0f, 400.0f);
+	Vector3 target = Vector3(0.0f, 0.0f, 0.0f);
+	g_camera3D->SetPosition(pos);
+	g_camera3D->SetTarget(target);
+	g_camera3D->Update();
 	while (g_engine.DispatchWindowMessage())
 	{
+		g_gamePad.Update();
+		Vector3 speed = Vector3::Zero;
+		speed.x = g_gamePad.GetLStickXF();
+		speed.z = g_gamePad.GetLStickYF();
+		speed *= 5.0f;
+		pos += speed;
+		target += speed;
+		g_camera3D->SetPosition(pos);
+		g_camera3D->SetTarget(target);
+		g_camera3D->Update();
 		//レンダリング開始。
 		g_graphicsEngine->BeginRender();
 
@@ -68,6 +90,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		modelRender4.Update();
 
+		//modelRender5.Update();
+
 		g_graphicsEngine->RendertoShadow();
 
 		g_graphicsEngine->BeginDeferredRender();
@@ -76,6 +100,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		modelRender.Draw();
 		modelRender3.Draw();
 		modelRender4.Draw();
+		modelRender5.Draw();
 
 		if (a >= 200) {
 			//modelRender.PlayAnimation(0, 0.0f);
@@ -97,7 +122,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		//レンダリング終了。
 		g_graphicsEngine->EndRender();
-
+		
 	}
 	return 0;
 }

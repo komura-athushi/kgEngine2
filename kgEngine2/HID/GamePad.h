@@ -153,3 +153,5 @@ private:
 
 	static EnXInputPadState m_padStates[MAX_PAD];
 };
+
+extern GamePad g_gamePad;

@@ -116,7 +116,7 @@ private:
 	Matrix m_lightVieProjMatrix[SHADOWMAP_NUM];			//各シャドウマップのビュープロジェクション行列
 	std::vector<Model*> m_shadowCaters;		//シャドウキャスターのリスト
 	Vector3 m_lightDir = Vector3(-0.6396f,-0.6396f,-0.4264f);
-	float m_lightHeight = 1000.0f;
+	float m_lightHeight = 1500.0f;
 	int m_shadowMapNumber = 0;
 };
 
