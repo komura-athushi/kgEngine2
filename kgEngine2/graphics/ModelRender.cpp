@@ -57,6 +57,7 @@ void ModelRender::Update()
 
 	if (m_model.GetShadowCaster()) {
 		g_graphicsEngine->GetShadowMap()->RegistShadowCaster(&m_model);
+		g_graphicsEngine->GetCascadeShadowMap()->RegistShadowCaster(&m_model);
 	}
 }
 

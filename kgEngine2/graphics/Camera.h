@@ -256,7 +256,7 @@ protected:
 	Vector3		m_forward = g_vec3Front;				//カメラの前方。
 	Vector3		m_right = g_vec3Right;					//カメラの右。
 	float		m_near = 1.0f;							//近平面。
-	float		m_far = 5000.0f;						//遠平面。
+	float		m_far = 3000.0f;						//遠平面。
 	float		m_viewAngle = Math::DegToRad(60.0f);	//画角(ラジアン)。
 	float		m_aspect = 1.0f;						//アスペクト比。
 	float		m_width = 1280.0f;						//平行投影行列を作成するときに使用される幅。

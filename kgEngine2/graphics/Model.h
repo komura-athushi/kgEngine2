@@ -63,7 +63,7 @@ public:
 	/// 描画
 	/// </summary>
 	/// <param name="renderContext">レンダリングコンテキスト</param>
-	void Draw(RenderContext& renderContext,EnRenderMode renderMode = enRenderMode_Normal);
+	void Draw(RenderContext& renderContext,EnRenderMode renderMode = enRenderMode_Normal,int shadowMapNumber = 0);
 	/// <summary>
 	/// ワールド行列を取得。
 	/// </summary>

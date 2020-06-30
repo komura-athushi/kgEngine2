@@ -98,6 +98,14 @@ void Material::InitPipelineState()
 	//スキンありモデル用を作成
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vsSkinShadowMap.GetCompiledBlob());
 	m_skinModelShadowMapPipelineState.Init(psoDesc);
+
+	//カスケードシャドウ用のパイプ来ステートを作成
+	//スキン無しモデル用を作成
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vsNonSkinCascadeShadowMap.GetCompiledBlob());
+	m_nonSkinModelCascadeShadowMapPipelineState.Init(psoDesc);
+	//スキンありモデル用を作成
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vsSkinCascadeShadowMap.GetCompiledBlob());
+	m_skinModelCascadeShadowMapPipelineState.Init(psoDesc);
 }
 void Material::InitShaders(
 	const wchar_t* fxFilePath,
@@ -115,6 +123,8 @@ void Material::InitShaders(
 
 	m_vsNonSkinShadowMap.LoadVS(L"Assets/shader/model.fx", "VSMain_ShadowMap");
 	m_vsSkinShadowMap.LoadVS(L"Assets/shader/model.fx", "VSMainSkin_ShadowMap");
+	m_vsNonSkinCascadeShadowMap.LoadVS(L"Assets/shader/model.fx", "VSMain_CascadeShadowMap");
+	m_vsSkinCascadeShadowMap.LoadVS(L"Assets/shader/model.fx", "VSMainSkin_CascadeShadowMap");
 	m_psShadowMap.LoadPS(L"Assets/shader/model.fx", "PSMain_ShadowMap");
 }
 
@@ -122,7 +132,15 @@ void Material::BeginRender(RenderContext& rc, int hasSkin, EnRenderMode renderMo
 {
 	rc.SetRootSignature(m_rootSignature);
 	
-	if (renderMode == enRenderMode_CreateShadowMap) {
+	if (renderMode == enRenderMode_CreateCascadeShadowMap) {
+		if (hasSkin) {
+			rc.SetPipelineState(m_skinModelCascadeShadowMapPipelineState);
+		}
+		else {
+			rc.SetPipelineState(m_nonSkinModelCascadeShadowMapPipelineState);
+		}
+	}
+	else if (renderMode == enRenderMode_CreateShadowMap) {
 		if (hasSkin) {
 			rc.SetPipelineState(m_skinModelShadowMapPipelineState);
 		}

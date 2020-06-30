@@ -93,11 +93,15 @@ private:
 	PipelineState m_skinModelPipelineState;		//スキンありモデル用のパイプラインステート。
 	PipelineState m_nonSkinModelShadowMapPipelineState;	//シャドウマップ生成用のスキンなしモデル用のパイプラインステート。
 	PipelineState m_skinModelShadowMapPipelineState;		//シャドウマップ生成用のスキンありモデル用のパイプラインステート。
+	PipelineState m_nonSkinModelCascadeShadowMapPipelineState;	//カスケードシャドウマップ生成用のスキンなしモデル用のパイプラインステート。
+	PipelineState m_skinModelCascadeShadowMapPipelineState;		//カスケードシャドウマップ生成用のスキンありモデル用のパイプラインステート。
 	Shader m_vsNonSkinModel;					//スキンなしモデル用の頂点シェーダー。
 	Shader m_vsSkinModel;						//スキンありモデル用の頂点シェーダー。
 	Shader m_psModel;							//モデル用のピクセルシェーダー。
 	Shader m_vsNonSkinShadowMap;				//シャドウマップ生成用のスキン無しモデルの頂点シェーダー
 	Shader m_vsSkinShadowMap;					//シャドウマップ生成用のスキンありモデルの頂点シェーダー
+	Shader m_vsNonSkinCascadeShadowMap;				//シャドウマップ生成用のスキン無しモデルの頂点シェーダー
+	Shader m_vsSkinCascadeShadowMap;					//シャドウマップ生成用のスキンありモデルの頂点シェーダー
 	Shader m_psShadowMap;						//シャドウマップ生成用のピクセルシェーダー
 };
 

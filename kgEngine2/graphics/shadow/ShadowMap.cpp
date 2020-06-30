@@ -53,6 +53,9 @@ void ShadowMap::UpdateFromLightDirection(const Vector3& lightCameraPos, const Ve
 		1500.0f
 	);
 
+	Matrix a = m_lightViewMatrix * m_lightProjMatrix;
+
+	int b = 0;
 }
 
 void ShadowMap::UpdateFromLightTaraget(const Vector3& lightCameraPos,const Vector3& lightCameraTarget)

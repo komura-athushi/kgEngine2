@@ -1,5 +1,8 @@
 
 
+static const int NUM_CASCADES = 3;
+
+
 //モデル用の定数バッファ
 cbuffer ModelCb : register(b0) {
 	float4x4 mWorld;
@@ -7,7 +10,10 @@ cbuffer ModelCb : register(b0) {
 	float4x4 mProj;
 	float4x4 mLightView;
 	float4x4 mLightProj;
+	float4x4 mLightViewProj[NUM_CASCADES];
 	int isShadowReciever;
+	int shadowMapNumber = 0;
+
 };
 
 /// <summary>
@@ -26,6 +32,7 @@ struct SVSIn {
 	uint4  indices  : BLENDINDICES0;
 	float4 weights  : BLENDWEIGHT0;
 };
+
 
 /*struct SVSIn {
 	float4 pos : SV_Position;
@@ -68,14 +75,17 @@ Texture2D<float4> g_texture : register(t0);
 Texture2D<float4> g_normal : register(t1);
 //スペキュラマップ
 Texture2D<float4> g_specularMap : register(t2);
-//シャドウマップ
-Texture2D<float4> g_shadowMap : register(t3);
 //ボーン行列
-StructuredBuffer<float4x4> boneMatrix : register(t4);
+StructuredBuffer<float4x4> boneMatrix : register(t3);
+//シャドウマップ
+Texture2D<float4> g_shadowMap : register(t4);
+//カスケードシャドウマップ
+Texture2D<float4> g_cascadeShadowMap1 : register(t5);
+Texture2D<float4> g_cascadeShadowMap2 : register(t6);
+Texture2D<float4> g_cascadeShadowMap3 : register(t7);
 
 //サンプラステート。
 sampler g_sampler : register(s0);
-
 
 /*!
  *@brief	スキン行列を計算。
@@ -249,6 +259,32 @@ PSInput_ShadowMap VSMainSkin_ShadowMap(SVSIn In)
 	psInput.Position = pos;
 	return psInput;
 }
+
+/// <summary>
+/// スキン無しカスケードシャドウマップ生成用の頂点シェーダー
+/// </summary>
+PSInput_ShadowMap VSMain_CascadeShadowMap(SVSIn In)
+{
+	PSInput_ShadowMap psInput = (PSInput_ShadowMap)0;
+	float4 pos = mul(mWorld, In.pos);
+	pos = mul(mLightViewProj[shadowMapNumber], pos);
+	psInput.Position = pos;
+	return psInput;
+}
+
+/// <summary>
+/// スキン有りカスケードシャドウマップ生成用の頂点シェーダー
+/// </summary>
+PSInput_ShadowMap VSMainSkin_CascadeShadowMap(SVSIn In)
+{
+	PSInput_ShadowMap psInput = (PSInput_ShadowMap)0;
+	float4x4 skinning = CalcSkinMatrix(In);
+	float4 pos = mul(skinning, In.pos);
+	pos = mul(mLightViewProj[shadowMapNumber], pos);
+	psInput.Position = pos;
+	return psInput;
+}
+
 /// <summary>
 /// シャドウマップ生成用のピクセルシェーダー
 /// </summary>

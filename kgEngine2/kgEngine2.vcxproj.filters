@@ -36,7 +36,9 @@
     <ClCompile Include="graphics\PostEffect\Bloom.cpp" />
     <ClCompile Include="graphics\Primitive.cpp" />
     <ClCompile Include="graphics\shadow\ShadowMap.cpp" />
-    <ClCompile Include="graphics\shadow\CascadeShadow.Mapcpp" />
+    <ClCompile Include="graphics\shadow\CascadeShadowMap.cpp" />
+    <ClCompile Include="math\BoundingBox.cpp" />
+    <ClCompile Include="graphics\shadow\IShadowMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HID\GamePad.h" />
@@ -83,5 +85,7 @@
     <ClInclude Include="graphics\shadow\ShadowMap.h" />
     <ClInclude Include="graphics\RenderMode.h" />
     <ClInclude Include="graphics\shadow\CascadeShadowMap.h" />
+    <ClInclude Include="math\BoundingBox.h" />
+    <ClInclude Include="graphics\shadow\IShadowMap.h" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,8 @@
 
 class Model;
 class CascadeShadowMap
+
+
 {
 public:
 	CascadeShadowMap();
@@ -24,6 +26,10 @@ public:
 	{
 		return m_lightProjMatrix;
 	}
+	/// <summary>
+	/// 更新
+	/// </summary>
+	void Update();
 	/// <summary>
 	/// ライトビュー行列やライトプロジェクション行列を更新
 	/// </summary>
@@ -64,14 +70,54 @@ public:
 	{
 		return &m_shadowMapRT[number];
 	}
-	static const int SHADOWMAP_NUM = 4;
+	/// <summary>
+	/// ライトの高さ
+	/// </summary>
+	/// <param name="lightHeight"></param>
+	void SetLightHeight(const float lightHeight)
+	{
+		m_lightHeight = lightHeight;
+	}
+	/// <summary>
+	/// ライトの方向を設定
+	/// </summary>
+	/// <param name="lightDir"></param>
+	void SetLightDirection(const Vector3& lightDir)
+	{
+		m_lightDir = lightDir;
+	}
+	/// <summary>
+	/// ライトビュープロジェクション行列を取得
+	/// </summary>
+	/// <returns></returns>
+	Matrix& GetLightViewProjMatrix()
+	{
+		return m_lightVieProjMatrix[m_shadowMapNumber];
+	}
+	Matrix& GetLightViewProjMatrix(int number)
+	{
+		return m_lightVieProjMatrix[number];
+	}
+	/// <summary>
+	/// シャドウマップの番号を取得、0からよ
+	/// </summary>
+	/// <returns></returns>
+	int GetShadowMapNumber() const
+	{
+		return m_shadowMapNumber;
+	}
+	static const int SHADOWMAP_NUM = 3;
 private:
 	Vector3 m_lightCameraPosition = Vector3(300.0f, 300.0f, -300.0f);		//ライトカメラの座標	
 	Vector3 m_lightCamerataraget = Vector3(0.0f, 0.0f, 0.0f);		//ライトカメラの注視点
 	Matrix m_lightViewMatrix;			//ライトビュー行列
 	Matrix m_lightProjMatrix;			//ライトプロジェクション行列
 	RenderTarget m_shadowMapRT[SHADOWMAP_NUM];			//シャドウマップのレンダリングターゲット
+	Matrix m_lightVieProjMatrix[SHADOWMAP_NUM];			//各シャドウマップのビュープロジェクション行列
 	std::vector<Model*> m_shadowCaters;		//シャドウキャスターのリスト
+	Vector3 m_lightDir = Vector3(-0.6396f,-0.6396f,-0.4264f);
+	float m_lightHeight = 1000.0f;
+	int m_shadowMapNumber = 0;
 };
 
 

@@ -277,6 +277,7 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	m_postEffect.Init();
 
 	m_shadowMap = new ShadowMap();
+	m_cascadeShadowMap = new CascadeShadowMap();
 	return true;
 }
 
@@ -553,9 +554,11 @@ void GraphicsEngine::BeginRender()
 
 void GraphicsEngine::RendertoShadow()
 {
-	m_shadowMap->UpdateFromLightTaraget(Vector3(00.0f, 300.0f, 00.0f), Vector3(0.0f, 0.0f, 0.0f));
+	m_shadowMap->UpdateFromLightTaraget(Vector3(300.0f, 300.0f, 200.0f), Vector3(0.0f, 0.0f, 0.0f));
 	//m_shadowMap->UpdateFromLightTaraget(g_camera3D->GetPosition(), g_camera3D->GetTarget());
-	m_shadowMap->RenderToShadowMap(m_renderContext);
+	//m_shadowMap->RenderToShadowMap(m_renderContext);
+	m_cascadeShadowMap->Update();
+	m_cascadeShadowMap->RenderToShadowMap(m_renderContext);
 }
 
 void GraphicsEngine::BeginDeferredRender()

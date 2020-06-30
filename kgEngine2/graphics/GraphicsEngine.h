@@ -20,6 +20,8 @@
 
 #include "shadow/ShadowMap.h"
 
+#include "shadow/CascadeShadowMap.h"
+
 #include "Camera.h"
 
 /// <summary>
@@ -155,9 +157,21 @@ public:
 	{
 		return m_mainRenderTarget;
 	}
+	/// <summary>
+	/// シャドウマップを取得
+	/// </summary>
+	/// <returns></returns>
 	ShadowMap* GetShadowMap()
 	{
 		return m_shadowMap;
+	}
+	/// <summary>
+	/// カスケードシャドウマップを取得
+	/// </summary>
+	/// <returns></returns>
+	CascadeShadowMap* GetCascadeShadowMap()
+	{
+		return m_cascadeShadowMap;
 	}
 	//フレームバッファの深度ステンシルビューを取得
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDSVCpuDescriptorHandle()
@@ -283,6 +297,7 @@ private:
 	PostEffect m_postEffect;			//ポストエフェクト
 	Sprite m_copyMainRtToFrameBufferSprite;		//メインレンダリングターゲットをコピーするためのスプライト
 	ShadowMap* m_shadowMap = nullptr;
+	CascadeShadowMap* m_cascadeShadowMap = nullptr;
 };
 
 extern GraphicsEngine* g_graphicsEngine;	//グラフィックスエンジン

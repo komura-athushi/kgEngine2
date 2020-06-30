@@ -55,13 +55,14 @@ void Model::UpdateWorldMatrix(Vector3 pos, Quaternion rot, Vector3 scale)
 	//スケルトンに渡す行列はバイアス無し
 	m_skeleton.Update(mScale * mRot * mTrans);
 }
-void Model::Draw(RenderContext& rc, EnRenderMode renderMode)
+void Model::Draw(RenderContext& rc, EnRenderMode renderMode, int shadowMapNumber)
 {
 	m_meshParts.Draw(
 		rc,
 		m_world,
 		g_camera3D->GetViewMatrix(),
 		g_camera3D->GetProjectionMatrix(),
-		renderMode
+		renderMode,
+		shadowMapNumber
 	);
 }

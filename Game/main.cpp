@@ -46,7 +46,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ModelRender modelRender3;
 	modelRender3.Init("Assets/modelData/box4.tkm");
 	modelRender3.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-	modelRender3.SetShadowCaster(false);
+
+	ModelRender modelRender4;
+	modelRender4.Init("Assets/modelData/box5.tkm");
+	modelRender4.SetPosition(Vector3(0.0f, 120.0f, 0.0f));
+	//modelRender3.SetShadowCaster(false);
 	//ModelRender box;
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
@@ -62,7 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		modelRender.Update();
 
-	
+		modelRender4.Update();
 
 		g_graphicsEngine->RendertoShadow();
 
@@ -71,6 +75,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		modelRender2.Draw();
 		modelRender.Draw();
 		modelRender3.Draw();
+		modelRender4.Draw();
 
 		if (a >= 200) {
 			//modelRender.PlayAnimation(0, 0.0f);

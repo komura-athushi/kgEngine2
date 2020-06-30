@@ -38,7 +38,10 @@ void MeshParts::InitFromTkmFile(
 		meshNo++;
 	});
 	//共通定数バッファの作成。
-	m_commonConstantBuffer.Init(sizeof(SConstantBuffer), nullptr);
+	for (int i = 0; i < CascadeShadowMap::SHADOWMAP_NUM + 1; i++) {
+		m_commonConstantBuffer[i].Init(sizeof(SConstantBuffer), nullptr);
+
+	}
 	//ユーザー拡張用の定数バッファを作成。
 	if (expandData) {
 		m_expandConstantBuffer.Init(expandDataSize, nullptr);
@@ -55,26 +58,33 @@ void MeshParts::CreateDescriptorHeaps()
 			numDescriptorHeap++;
 		}
 	}
-	//ディスクリプタヒープをドカッと確保。
-	m_descriptorHeap.resize(numDescriptorHeap);
-	//ディスクリプタヒープを構築していく。
-	int descriptorHeapNo = 0;
-	for (auto& mesh : m_meshs) {
-		for (int matNo = 0; matNo < mesh->m_materials.size(); matNo++) {
-			auto& descriptorHeap = m_descriptorHeap[descriptorHeapNo];
-			//ディスクリプタヒープにディスクリプタを登録していく。
-			descriptorHeap.RegistShaderResource(0, mesh->m_materials[matNo]->GetAlbedoMap());		//アルベドマップ。
-			descriptorHeap.RegistShaderResource(1, mesh->m_materials[matNo]->GetNormalMap());		//法線マップ。
-			descriptorHeap.RegistShaderResource(2, mesh->m_materials[matNo]->GetSpecularMap());	//スペキュラマップ。
-			descriptorHeap.RegistShaderResource(3, g_graphicsEngine->GetShadowMap()->GetShadowMapTexture());  //シャドウマップ
-			descriptorHeap.RegistShaderResource(4, m_boneMatricesStructureBuffer);	//ボーン
-			descriptorHeap.RegistConstantBuffer(0, m_commonConstantBuffer);
-			if (m_expandConstantBuffer.IsValid()) {
-				descriptorHeap.RegistConstantBuffer(1, m_expandConstantBuffer);
+	for (int i = 0; i < CascadeShadowMap::SHADOWMAP_NUM + 1; i++) {
+		//ディスクリプタヒープをドカッと確保。
+		m_descriptorHeapList[i].resize(numDescriptorHeap);
+		//ディスクリプタヒープを構築していく。
+		int descriptorHeapNo = 0;
+		for (auto& mesh : m_meshs) {
+			for (int matNo = 0; matNo < mesh->m_materials.size(); matNo++) {
+				DescriptorHeapList& descriptorHeapList = m_descriptorHeapList[i];
+				DescriptorHeap& descriptorHeap = descriptorHeapList.at(descriptorHeapNo);
+				//ディスクリプタヒープにディスクリプタを登録していく。
+				descriptorHeap.RegistShaderResource(0, mesh->m_materials[matNo]->GetAlbedoMap());		//アルベドマップ。
+				descriptorHeap.RegistShaderResource(1, mesh->m_materials[matNo]->GetNormalMap());		//法線マップ。
+				descriptorHeap.RegistShaderResource(2, mesh->m_materials[matNo]->GetSpecularMap());	//スペキュラマップ。
+				descriptorHeap.RegistShaderResource(3, m_boneMatricesStructureBuffer);	//ボーン
+				descriptorHeap.RegistShaderResource(4, g_graphicsEngine->GetShadowMap()->GetShadowMapTexture());  //シャドウマップ
+				for (int i = 0; i < CascadeShadowMap::SHADOWMAP_NUM; i++) {
+					descriptorHeap.RegistShaderResource(4 + i + 1, g_graphicsEngine->GetCascadeShadowMap()->GetShadowMapTexture(i));
+				}
+			
+				descriptorHeap.RegistConstantBuffer(0, m_commonConstantBuffer[i]);
+				if (m_expandConstantBuffer.IsValid()) {
+					descriptorHeap.RegistConstantBuffer(1, m_expandConstantBuffer);
+				}
+				//ディスクリプタヒープへの登録を確定させる。
+				descriptorHeap.Commit();
+				descriptorHeapNo++;
 			}
-			//ディスクリプタヒープへの登録を確定させる。
-			descriptorHeap.Commit();
-			descriptorHeapNo++;
 		}
 	}
 	m_isInitDescriptorHeap = true;
@@ -160,7 +170,8 @@ void MeshParts::Draw(
 	const Matrix& mWorld,
 	const Matrix& mView,
 	const Matrix& mProj,
-	EnRenderMode renderMode
+	EnRenderMode renderMode,
+	int shadowMapNumber
 )
 {
 #if 1
@@ -174,10 +185,17 @@ void MeshParts::Draw(
 	rc.SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	auto shadowMap = g_graphicsEngine->GetShadowMap();
+	auto cascadeMap = g_graphicsEngine->GetCascadeShadowMap();
 	//定数バッファを更新する。
 	SConstantBuffer cb;
 	cb.mWorld = mWorld;
-	if (renderMode == enRenderMode_CreateShadowMap) {
+	cb.mLightViewProj[0] = cascadeMap->GetLightViewProjMatrix(0);
+	cb.mLightViewProj[1] = cascadeMap->GetLightViewProjMatrix(1);
+	cb.mLightViewProj[2] = cascadeMap->GetLightViewProjMatrix(2);
+	if (renderMode == enRenderMode_CreateCascadeShadowMap) {
+		cb.shadowMapNumber = cascadeMap->GetShadowMapNumber();
+	}
+	else if (renderMode == enRenderMode_CreateShadowMap) {
 		cb.mView = shadowMap->GetLightViewMatrix();
 		cb.mProj = shadowMap->GetLightProjMatrix();
 		//cb.mView = mView;
@@ -200,10 +218,15 @@ void MeshParts::Draw(
 	else {
 		cb.isShadowReciever = 0;
 	}
+	Matrix m = g_camera3D->GetViewMatrix() * g_camera3D->GetProjectionMatrix();
 
 
+	int descriptorHeapNumber = 0;
+	if (renderMode == enRenderMode_CreateCascadeShadowMap) {
+		descriptorHeapNumber = cascadeMap->GetShadowMapNumber() + 1;
+	}
 
-	m_commonConstantBuffer.CopyToVRAM(&cb);
+	m_commonConstantBuffer[descriptorHeapNumber].CopyToVRAM(&cb);
 
 	if (m_expandData) {
 		m_expandConstantBuffer.CopyToVRAM(m_expandData);
@@ -224,7 +247,9 @@ void MeshParts::Draw(
 			//このマテリアルが貼られているメッシュの描画開始。
 			mesh->m_materials[matNo]->BeginRender(rc, mesh->skinFlags[matNo], renderMode);
 			//ディスクリプタヒープを登録。
-			rc.SetDescriptorHeap(m_descriptorHeap.at(descriptorHeapNo));
+			DescriptorHeapList& descriptorHeapList = m_descriptorHeapList[descriptorHeapNumber];
+			DescriptorHeap& descriptorHeap = descriptorHeapList.at(descriptorHeapNo);
+			rc.SetDescriptorHeap(descriptorHeap);
 			//インデックスバッファを設定。
 			auto& ib = mesh->m_indexBufferArray[matNo];
 			rc.SetIndexBuffer(*ib);
