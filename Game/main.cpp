@@ -50,11 +50,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	ModelRender modelRender4;
 	modelRender4.Init("Assets/modelData/box5.tkm");
-	modelRender4.SetPosition(Vector3(0.0f, 600.0f, 500.0f));
+	modelRender4.SetPosition(Vector3(-900.0f, 400.0f, 900.0f));
 
 	ModelRender modelRender5;
 	modelRender5.Init("Assets/modelData/box5.tkm");
 	modelRender5.SetPosition(Vector3(500.0f, 00.0f, -300.0f));
+
+	ModelRender modelRender6;
+	modelRender6.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
+	modelRender6.PlayAnimation(0, 0.0f);
+	modelRender6.SetPosition(Vector3(500.0f, 0.0f, 0.0f));
+	
+	ModelRender modelRender7;
+	modelRender7.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
+	modelRender7.PlayAnimation(0, 0.0f);
+	modelRender7.SetPosition(Vector3(800.0f, 0.0f, -1000.0f));
+
+	ModelRender modelRender8;
+	modelRender8.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
+	modelRender8.PlayAnimation(0, 0.0f);
+	modelRender8.SetPosition(Vector3(1000.0f, 0.0f, 2000.0f));
 
 	g_gamePad.Init(0);
 	//modelRender3.SetShadowCaster(false);
@@ -62,7 +77,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
 	// ここからゲームループ。
-	Vector3 pos = Vector3(400.0f, 500.0f, 400.0f);
+	Vector3 pos = Vector3(400.0f, 300.0f, 400.0f);
 	Vector3 target = Vector3(0.0f, 0.0f, 0.0f);
 	g_camera3D->SetPosition(pos);
 	g_camera3D->SetTarget(target);
@@ -73,7 +88,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		Vector3 speed = Vector3::Zero;
 		speed.x = g_gamePad.GetLStickXF();
 		speed.z = g_gamePad.GetLStickYF();
-		speed *= 5.0f;
+		speed *= 15.0f;
 		pos += speed;
 		target += speed;
 		g_camera3D->SetPosition(pos);
@@ -82,7 +97,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		//レンダリング開始。
 		g_graphicsEngine->BeginRender();
 
-		modelRender3.Update();
+		//modelRender3.Update();
 
 		modelRender2.Update();
 
@@ -90,7 +105,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		modelRender4.Update();
 
-		//modelRender5.Update();
+		modelRender5.Update();
+
+		modelRender6.Update();
+
+		modelRender7.Update();
+
+		modelRender8.Update();
 
 		g_graphicsEngine->RendertoShadow();
 
@@ -98,9 +119,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		modelRender2.Draw();
 		modelRender.Draw();
-		modelRender3.Draw();
+		//modelRender3.Draw();
 		modelRender4.Draw();
 		modelRender5.Draw();
+		modelRender7.Draw();
+		modelRender6.Draw();
+		modelRender8.Draw();
 
 		if (a >= 200) {
 			//modelRender.PlayAnimation(0, 0.0f);

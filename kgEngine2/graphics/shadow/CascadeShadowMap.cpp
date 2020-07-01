@@ -7,8 +7,8 @@
 CascadeShadowMap::CascadeShadowMap()
 {
 	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	int w = 256;
-	int h = 256;
+	int w = 512;
+	int h = 512;
 	for(int i = 0; i < SHADOWMAP_NUM; i++) {
 	m_shadowMapRT[i].Create(
 		w = w << 1,
@@ -145,8 +145,12 @@ void CascadeShadowMap::Update()
 	inverseViewMatrix.Inverse();
 	float nearClip = g_camera3D->GetNear();
 	float farClip = g_camera3D->GetFar();
-	farClip /= SHADOWMAP_NUM;
-	float shadowArea = farClip;
+	farClip /= (SHADOWMAP_NUM * 3);
+	float shadowArea[3] = {
+		farClip * 4 * 0.8f,
+		farClip * 9 * 0.8f,
+		0.0f
+	};
 	float FOVX = g_camera3D->GetViewAngle();
 	float FOVY = FOVX / g_camera3D->GetAspect();
 
@@ -226,8 +230,8 @@ void CascadeShadowMap::Update()
 		//ライトビュープロジェクション行列を求めていくぅ～
 		m_lightVieProjMatrix[i] = lightViewMatrix * projMatrix;
 
-		nearClip = farClip;
-		farClip += shadowArea;
+		nearClip = farClip ;
+		farClip = shadowArea[i];
 	}
 }
 

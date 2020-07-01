@@ -227,7 +227,7 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 					zInShadowMap = g_cascadeShadowMap3.Sample(g_sampler, shadowMapUV);
 				}
 				
-				if (zInLVP > zInShadowMap + 0.002f) {
+				if (zInLVP > zInShadowMap + 0.008f) {
 					//‰e‚ª—‚¿‚Ä‚¢‚é‚Ì‚ÅAŒõ‚ğã‚­‚·‚é
 					spsOut.shadow = 0.5f;
 					//	spsOut.shadow = zInShadowMap;
