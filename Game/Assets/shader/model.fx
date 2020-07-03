@@ -227,14 +227,15 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 					zInShadowMap = g_cascadeShadowMap3.Sample(g_sampler, shadowMapUV);
 				}
 				
-				if (zInLVP > zInShadowMap + 0.008f) {
+				if (zInLVP > zInShadowMap + 0.0001f) {
 					//‰e‚ª—‚¿‚Ä‚¢‚é‚Ì‚ÅAŒõ‚ğã‚­‚·‚é
 					spsOut.shadow = 0.5f;
 					//	spsOut.shadow = zInShadowMap;
 						//spsOut.shadow = zInLVP;
 						//spsOut.shadow = psIn.pos.z / psIn.pos.w;
-					break;
+				
 				}
+				break;
 			}
 		}
 	}

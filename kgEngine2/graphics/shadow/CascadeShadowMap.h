@@ -106,6 +106,14 @@ public:
 	{
 		return m_shadowMapNumber;
 	}
+	/// <summary>
+	/// ライトの方向を取得
+	/// </summary>
+	/// <returns></returns>
+	Vector3& GetLightDir()
+	{
+		return m_lightDir;
+	}
 	static const int SHADOWMAP_NUM = 3;
 private:
 	Vector3 m_lightCameraPosition = Vector3(300.0f, 300.0f, -300.0f);		//ライトカメラの座標	

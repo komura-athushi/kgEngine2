@@ -29,7 +29,7 @@ public:
 		m_rotation = rotation;
 	}
 	//‘å‚«‚³‚ğİ’è
-	void SetRotation(const Vector3& scale)
+	void SetScale(const Vector3& scale)
 	{
 		m_scale = scale;
 	}

@@ -40,9 +40,9 @@ float4 PSMain( PSInput In ) : SV_Target0
 	normal = (normal * 2.0f)-1.0f;
 	//ライトを計算。
 	float3 lig = 0.0f;
-	//float t = max( 0.0f, dot( normal, ligDirection) * -1.0f);
-	//lig = ligColor * t;
-	lig += 0.7f;
+	float t = max( 0.0f, dot( normal, ligDirection) * -1.0f);
+	lig = ligColor * t;
+	lig += 1.0f;
 	lig *= shadow;
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	finalColor = albedo;

@@ -55,11 +55,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	ModelRender modelRender5;
 	modelRender5.Init("Assets/modelData/box5.tkm");
 	modelRender5.SetPosition(Vector3(500.0f, 00.0f, -300.0f));
+	modelRender5.SetScale(Vector3::One * 3.0f);
 
 	ModelRender modelRender6;
 	modelRender6.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
 	modelRender6.PlayAnimation(0, 0.0f);
 	modelRender6.SetPosition(Vector3(500.0f, 0.0f, 0.0f));
+	modelRender6.SetScale(Vector3::One * 3.0f);
 	
 	ModelRender modelRender7;
 	modelRender7.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
@@ -70,6 +72,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	modelRender8.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
 	modelRender8.PlayAnimation(0, 0.0f);
 	modelRender8.SetPosition(Vector3(1000.0f, 0.0f, 2000.0f));
+	modelRender8.SetScale(Vector3::One * 3.0f);
+
+	ModelRender modelRender9;
+	modelRender9.Init("Assets/modelData/unityChan.tkm", animationClip, 2);
+	modelRender9.PlayAnimation(0, 0.0f);
+	modelRender9.SetPosition(Vector3(800.0f, 0.0f, 1000.0f));
 
 	g_gamePad.Init(0);
 	//modelRender3.SetShadowCaster(false);
@@ -77,7 +85,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
 	// ここからゲームループ。
-	Vector3 pos = Vector3(400.0f, 300.0f, 400.0f);
+	Vector3 pos = Vector3(00.0f, 400.0f, -700.0f);
 	Vector3 target = Vector3(0.0f, 0.0f, 0.0f);
 	g_camera3D->SetPosition(pos);
 	g_camera3D->SetTarget(target);
@@ -113,6 +121,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		modelRender8.Update();
 
+		modelRender9.Update();
+
 		g_graphicsEngine->RendertoShadow();
 
 		g_graphicsEngine->BeginDeferredRender();
@@ -125,6 +135,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		modelRender7.Draw();
 		modelRender6.Draw();
 		modelRender8.Draw();
+		modelRender9.Draw();
 
 		if (a >= 200) {
 			//modelRender.PlayAnimation(0, 0.0f);

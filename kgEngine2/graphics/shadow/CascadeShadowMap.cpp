@@ -7,18 +7,18 @@
 CascadeShadowMap::CascadeShadowMap()
 {
 	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	int w = 512;
-	int h = 512;
-	for(int i = 0; i < SHADOWMAP_NUM; i++) {
-	m_shadowMapRT[i].Create(
-		w = w << 1,
-		h = h << 1,
-		1,
-		1,
-		DXGI_FORMAT_R32_FLOAT,
-		DXGI_FORMAT_D32_FLOAT,
-		clearColor
-	);
+	int w = 4096;
+	int h = 4096;
+	for (int i = 0; i < SHADOWMAP_NUM; i++) {
+		m_shadowMapRT[i].Create(
+			w,
+			h,
+			1,
+			1,
+			DXGI_FORMAT_R32_FLOAT,
+			DXGI_FORMAT_D32_FLOAT,
+			clearColor
+		);
 	}
 
 	/*float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -147,9 +147,16 @@ void CascadeShadowMap::Update()
 	float farClip = g_camera3D->GetFar();
 	farClip /= (SHADOWMAP_NUM * 3);
 	float shadowArea[3] = {
-		farClip * 4 * 0.8f,
-		farClip * 9 * 0.8f,
+		farClip * 3 * 1.0f,
+		farClip * 9 * 0.9f,
 		0.0f
+	};
+	farClip = m_lightHeight * 2.0f;
+	float shadowAreaTbl[] = {
+			m_lightHeight * 1.0f,
+			m_lightHeight * 2.0f,
+			m_lightHeight * 4.0f,
+			m_lightHeight * 3.6f
 	};
 	float FOVX = g_camera3D->GetViewAngle();
 	float FOVY = FOVX / g_camera3D->GetAspect();
@@ -177,14 +184,17 @@ void CascadeShadowMap::Update()
 		pos[6] = Vector3(x2, -y2, farClip);
 		pos[7] = Vector3(-x2, -y2, farClip);
 
-		Vector3 vectorMin = Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
-		Vector3 vectorMax = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-
 		Vector3 posSum = Vector3::Zero;
 		for (int i = 0; i < 8; i++) {
 			//カメラの逆ビュー行列をかけて、カメラビュー座標をワールド座標に変換する
 			inverseViewMatrix.Apply(pos[i]);
 			posSum.Add(pos[i]);
+			if (pos[i].y <= -1000.0f) {
+				pos[i].y = -1000.0f;
+ 			}
+			else if (pos[i].y >= 2000.0f) {
+				pos[i].y = 2000.0f;
+ 			}
 		}
 
 		//中央の座標を求めていく
@@ -202,7 +212,10 @@ void CascadeShadowMap::Update()
 		lightViewMatrix.m[3][3] = 1.0f;
 		lightViewMatrix.Inverse(lightViewMatrix);	//ライトビュー完成。
 
-		for(int i = 0; i < 8; i++) {
+		Vector3 vectorMin = Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
+		Vector3 vectorMax = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+		for (int i = 0; i < 8; i++) {
 			//ライトビュー行列をかけて、ワールド座標をライトカメラビュー座標に変換する
 			lightViewMatrix.Apply(pos[i]);
 
@@ -214,7 +227,7 @@ void CascadeShadowMap::Update()
 			vectorMin.z = min(vectorMin.z, pos[i].z);
 			vectorMax.z = max(vectorMax.z, pos[i].z);
 		}
-		
+
 		float w = vectorMax.x - vectorMin.x;
 		float h = vectorMax.y - vectorMin.y;
 
@@ -230,8 +243,9 @@ void CascadeShadowMap::Update()
 		//ライトビュープロジェクション行列を求めていくぅ～
 		m_lightVieProjMatrix[i] = lightViewMatrix * projMatrix;
 
-		nearClip = farClip ;
+		nearClip = farClip * 1.0f;
 		farClip = shadowArea[i];
+		farClip = shadowAreaTbl[i + 1];
 	}
 }
 

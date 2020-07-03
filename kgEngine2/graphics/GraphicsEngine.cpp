@@ -167,6 +167,15 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 	g_camera2D = &m_camera2D;
 	g_camera3D = &m_camera3D;
 		
+	m_shadowMap = new ShadowMap();
+	m_cascadeShadowMap = new CascadeShadowMap();
+
+
+	Vector3 lightDir = m_cascadeShadowMap->GetLightDir();
+
+	m_dirLight.direction = Vector4(lightDir.x, lightDir.y, lightDir.z, 1.0f);
+	m_dirLight.lightcolor = { 1.4f, 1.4f, 1.4f, 1.4f };
+
 	float color3[4] = { 0.5f,0.5f,0.5f,1.0f };
 
 	//メインレンダリングターゲット
@@ -247,8 +256,6 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 
 	m_shadowColorRT.SetClearColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 
-	m_dirLight.direction = { 0.577f, 0.577f, -0.577f, 0.0f };
-	m_dirLight.lightcolor = { 0.5f, 0.5f, 0.5f, 0.5f };
 
 	//ディファードレンダリング用のテクスチャを作成しまーす
 	//テクスチャデータの設定をする
@@ -276,8 +283,9 @@ bool GraphicsEngine::Init(HWND hwnd, UINT frameBufferWidth, UINT frameBufferHeig
 
 	m_postEffect.Init();
 
-	m_shadowMap = new ShadowMap();
-	m_cascadeShadowMap = new CascadeShadowMap();
+
+
+	
 	return true;
 }
 
