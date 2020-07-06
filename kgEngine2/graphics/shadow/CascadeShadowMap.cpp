@@ -151,12 +151,13 @@ void CascadeShadowMap::Update()
 		farClip * 9 * 0.9f,
 		0.0f
 	};
-	farClip = m_lightHeight * 2.0f;
+	farClip = m_lightHeight * 1.5f;
 	float shadowAreaTbl[] = {
-			m_lightHeight * 1.0f,
-			m_lightHeight * 2.0f,
-			m_lightHeight * 4.0f,
-			m_lightHeight * 3.6f
+		m_lightHeight * 1.5f,
+		m_lightHeight * 3.0f,
+		m_lightHeight * 6.0f,
+		m_lightHeight * 3.6f,
+
 	};
 	float FOVX = g_camera3D->GetViewAngle();
 	float FOVY = FOVX / g_camera3D->GetAspect();
@@ -189,12 +190,12 @@ void CascadeShadowMap::Update()
 			//カメラの逆ビュー行列をかけて、カメラビュー座標をワールド座標に変換する
 			inverseViewMatrix.Apply(pos[i]);
 			posSum.Add(pos[i]);
-			if (pos[i].y <= -1000.0f) {
-				pos[i].y = -1000.0f;
+			/*if (pos[i].y <= -2000.0f) {
+				pos[i].y = -2000.0f;
  			}
 			else if (pos[i].y >= 2000.0f) {
 				pos[i].y = 2000.0f;
- 			}
+ 			}*/
 		}
 
 		//中央の座標を求めていく
@@ -243,7 +244,7 @@ void CascadeShadowMap::Update()
 		//ライトビュープロジェクション行列を求めていくぅ～
 		m_lightVieProjMatrix[i] = lightViewMatrix * projMatrix;
 
-		nearClip = farClip * 1.0f;
+		nearClip = farClip * 0.25f;
 		farClip = shadowArea[i];
 		farClip = shadowAreaTbl[i + 1];
 	}
