@@ -87,9 +87,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//box.Init("Assets/modelData/box.tkm");
 	int a = 0;
 	// ここからゲームループ。
-	Vector3 pos = Vector3(00.0f, 400.0f, 700.0f);
+	Vector3 pos = Vector3(00.0f, 500.0f, 700.0f);
 	//Vector3 pos = Vector3(-400.0f, 400.0f, 400.0f);
-	Vector3 target = Vector3(0.0f, 0.0f, 0.0f);
+	Vector3 target = Vector3(0.0f, 100.0f, 0.0f);
 	g_camera3D->SetPosition(pos);
 	g_camera3D->SetTarget(target);
 	g_camera3D->Update();

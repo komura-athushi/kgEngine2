@@ -114,6 +114,15 @@ public:
 	{
 		return m_lightDir;
 	}
+	/// <summary>
+	/// 各シャドウマップの限界深度値を取得
+	/// </summary>
+	/// <param name="number"></param>
+	/// <returns></returns>
+	float GetFar(const int number)
+	{
+		return m_farList[number];
+	}
 	static const int SHADOWMAP_NUM = 3;
 private:
 	Vector3 m_lightCameraPosition = Vector3(300.0f, 300.0f, -300.0f);		//ライトカメラの座標	
@@ -126,6 +135,7 @@ private:
 	Vector3 m_lightDir = Vector3(-0.6396f,-0.6396f,-0.4264f);
 	float m_lightHeight = 2000.0f;
 	int m_shadowMapNumber = 0;
+	float m_farList[SHADOWMAP_NUM];
 };
 
 

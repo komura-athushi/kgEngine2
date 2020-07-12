@@ -11,6 +11,7 @@ cbuffer ModelCb : register(b0) {
 	float4x4 mLightView;
 	float4x4 mLightProj;
 	float4x4 mLightViewProj[NUM_CASCADES];
+	float4 mFarList[NUM_CASCADES];
 	int isShadowReciever;
 	int shadowMapNumber = 0;
 
@@ -52,7 +53,8 @@ struct SPSIn {
 	float3 normal		: NORMAL;		//法線。
 	float2 uv 			: TEXCOORD0;	//uv座標。
 	float3 worldPos		: TEXCOORD1;	//ワールド空間でのピクセルの座標。
-	float4 posInLVP[NUM_CASCADES]		: TEXCOORD2;	//ライトビュープロジェクション空間での座標
+	float4 posInCamera  : TEXCOORD2;    //カメラ空間での座標
+	float4 posInLVP[NUM_CASCADES]		: TEXCOORD3;	//ライトビュープロジェクション空間での座標
 };
 
 /// <summary>
@@ -122,6 +124,7 @@ SPSIn VSMain(SVSIn vsIn)
 		}
 	}
 	psIn.pos = mul(mView, psIn.pos);			//ワールド座標系からカメラ座標系に変換。
+	psIn.posInCamera = psIn.pos;
 	psIn.pos = mul(mProj, psIn.pos);			//カメラ座標系からスクリーン座標系に変換。
 	psIn.normal = mul(mWorld, vsIn.normal);		//法線をワールド座標系に変換。
 	psIn.uv = vsIn.uv;
@@ -148,6 +151,7 @@ SPSIn VSMainSkin(SVSIn vsIn)
 		}
 	}
 	psIn.pos = mul(mView, psIn.pos);			//ワールド座標系からカメラ座標系に変換。
+	psIn.posInCamera = psIn.pos;
 	psIn.pos = mul(mProj, psIn.pos);			//カメラ座標系からスクリーン座標系に変換。
 	psIn.normal = mul(mWorld, vsIn.normal);		//法線をワールド座標系に変換。
 	psIn.uv = vsIn.uv;
@@ -201,41 +205,43 @@ SPSOut PSMain(SPSIn psIn) : SV_Target0
 		//シャドウレシーバー。
 	if (isShadowReciever == 1) {
 		for (int i = 0; i < NUM_CASCADES; i++) {
-			//LVP空間から見た時の最も手前の深度値をシャドウマップから取得する。
-		//プロジェクション行列をシャドウマップのUV座標に変換している
-			float2 shadowMapUV = psIn.posInLVP[i].xy / psIn.posInLVP[i].w;
-			shadowMapUV *= float2(0.5f, -0.5f);
-			shadowMapUV += 0.5f;
-			//spsOut.shadow = shadowMapUV.x;
-			//シャドウマップのUV座標範囲内かどうかを判定する。
-			if (shadowMapUV.x < 1.0f
-				&& shadowMapUV.x > 0.0f
-				&& shadowMapUV.y < 1.0f
-				&& shadowMapUV.y > 0.0f
-				) {
-				///LVP空間での深度値を計算。
-				float zInLVP = psIn.posInLVP[i].z / psIn.posInLVP[i].w;
-				float zInShadowMap;
-				//シャドウマップに書き込まれている深度値を取得。
-				if (i == 0) {
-					zInShadowMap = g_cascadeShadowMap1.Sample(g_sampler, shadowMapUV);
-				}
-				else if (i == 1) {
-					zInShadowMap = g_cascadeShadowMap2.Sample(g_sampler, shadowMapUV);
-				}
-				else if (i == 2) {
-					zInShadowMap = g_cascadeShadowMap3.Sample(g_sampler, shadowMapUV);
-				}
-				
-				if (zInLVP > zInShadowMap + 0.0003f) {
-					//影が落ちているので、光を弱くする
-					spsOut.shadow = 0.5f;
-					//	spsOut.shadow = zInShadowMap;
-						//spsOut.shadow = zInLVP;
-						//spsOut.shadow = psIn.pos.z / psIn.pos.w;
+			if (mFarList[i].x > psIn.posInCamera.z) {
+				//LVP空間から見た時の最も手前の深度値をシャドウマップから取得する。
+			//プロジェクション行列をシャドウマップのUV座標に変換している
+				float2 shadowMapUV = psIn.posInLVP[i].xy / psIn.posInLVP[i].w;
+				shadowMapUV *= float2(0.5f, -0.5f);
+				shadowMapUV += 0.5f;
+				//spsOut.shadow = shadowMapUV.x;
+				//シャドウマップのUV座標範囲内かどうかを判定する。
+				if (shadowMapUV.x < 1.0f
+					&& shadowMapUV.x > 0.0f
+					&& shadowMapUV.y < 1.0f
+					&& shadowMapUV.y > 0.0f
+					) {
+					///LVP空間での深度値を計算。
+					float zInLVP = psIn.posInLVP[i].z / psIn.posInLVP[i].w;
+					float zInShadowMap;
+					//シャドウマップに書き込まれている深度値を取得。
+					if (i == 0) {
+						zInShadowMap = g_cascadeShadowMap1.Sample(g_sampler, shadowMapUV);
+					}
+					else if (i == 1) {
+						zInShadowMap = g_cascadeShadowMap2.Sample(g_sampler, shadowMapUV);
+					}
+					else if (i == 2) {
+						zInShadowMap = g_cascadeShadowMap3.Sample(g_sampler, shadowMapUV);
+					}
+
+					if (zInLVP > zInShadowMap + 0.0001f * (NUM_CASCADES - i)) {
+						//影が落ちているので、光を弱くする
+						spsOut.shadow = 0.5f;
+						//	spsOut.shadow = zInShadowMap;
+							//spsOut.shadow = zInLVP;
+							//spsOut.shadow = psIn.pos.z / psIn.pos.w;
+
+					}
 					break;
 				}
-			
 			}
 		}
 	}

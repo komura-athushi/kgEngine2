@@ -189,9 +189,10 @@ void MeshParts::Draw(
 	//定数バッファを更新する。
 	SConstantBuffer cb;
 	cb.mWorld = mWorld;
-	cb.mLightViewProj[0] = cascadeMap->GetLightViewProjMatrix(0);
-	cb.mLightViewProj[1] = cascadeMap->GetLightViewProjMatrix(1);
-	cb.mLightViewProj[2] = cascadeMap->GetLightViewProjMatrix(2);
+	for (int i = 0; i < CascadeShadowMap::SHADOWMAP_NUM; i++) {
+		cb.mLightViewProj[i] = cascadeMap->GetLightViewProjMatrix(i);
+		cb.mFarList[i] = { cascadeMap->GetFar(i),0.0f,0.0f,0.0f };
+	}
 	if (renderMode == enRenderMode_CreateCascadeShadowMap) {
 		cb.shadowMapNumber = cascadeMap->GetShadowMapNumber();
 	}

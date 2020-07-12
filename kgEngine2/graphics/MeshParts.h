@@ -113,6 +113,7 @@ private:
 		Matrix mLightView;		//ライトビュー行列
 		Matrix mLightProj;		//ライトプロジェクション行列
 		Matrix mLightViewProj[CascadeShadowMap::SHADOWMAP_NUM];	//ライトビュープロジェクション行列
+		Vector4 mFarList[CascadeShadowMap::SHADOWMAP_NUM];
 		int isShadowReciever;	//シャドウレシーバーのフラグ
 		int shadowMapNumber = 0;	//何番目のシャドウマップにレンダリングするか
 	};

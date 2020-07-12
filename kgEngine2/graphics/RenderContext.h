@@ -169,6 +169,12 @@ public:
 		viewport.MinDepth = D3D12_MIN_DEPTH;
 		viewport.MaxDepth = D3D12_MAX_DEPTH;
 		SetViewport(viewport);
+		D3D12_RECT srect;
+		srect.top = 0;
+		srect.left = 0;
+		srect.right = renderTarget.GetWidth();
+		srect.bottom = renderTarget.GetHeight();
+		SetScissorRect(srect);
 	}
 	/// <summary>
 	/// レンダリングターゲットを設定

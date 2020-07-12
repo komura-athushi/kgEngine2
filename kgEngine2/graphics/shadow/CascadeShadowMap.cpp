@@ -7,12 +7,15 @@
 CascadeShadowMap::CascadeShadowMap()
 {
 	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	int w = 4096;
-	int h = 4096;
+	static float resTbl[SHADOWMAP_NUM][2] = {
+			{4096, 4096},
+			{2048, 2048},
+			{1024, 1024},
+	};
 	for (int i = 0; i < SHADOWMAP_NUM; i++) {
 		m_shadowMapRT[i].Create(
-			w,
-			h,
+			resTbl[i][0],
+			resTbl[i][1],
 			1,
 			1,
 			DXGI_FORMAT_R32_FLOAT,
@@ -144,21 +147,13 @@ void CascadeShadowMap::Update()
 	Matrix inverseViewMatrix = g_camera3D->GetViewMatrix();
 	inverseViewMatrix.Inverse();
 	float nearClip = g_camera3D->GetNear();
-	float farClip = g_camera3D->GetFar();
-	farClip /= (SHADOWMAP_NUM * 3);
-	float shadowArea[3] = {
-		farClip * 3 * 1.0f,
-		farClip * 9 * 0.9f,
+	float shadowAreaTbl[4] = {
+		m_lightHeight * 1.0f,
+		m_lightHeight * 2.5f,
+		m_lightHeight * 5.0f,
 		0.0f
 	};
-	farClip = m_lightHeight * 1.5f;
-	float shadowAreaTbl[] = {
-		m_lightHeight * 1.5f,
-		m_lightHeight * 3.0f,
-		m_lightHeight * 6.0f,
-		m_lightHeight * 3.6f,
-
-	};
+	float farClip = shadowAreaTbl[0];
 	float FOVX = g_camera3D->GetViewAngle();
 	float FOVY = FOVX / g_camera3D->GetAspect();
 
@@ -202,8 +197,15 @@ void CascadeShadowMap::Update()
 		Vector3 centerPos = posSum / 8;
 
 		//視推台の中央の座標とライトの高さを元にライトの座標を決めていく
-		float scaler = (m_lightHeight - centerPos.y) / m_lightDir.y;
-		Vector3 lightPos = centerPos + m_lightDir * scaler;
+		//float scaler = (m_lightHeight - centerPos.y) / m_lightDir.y;
+		//Vector3 lightPos = centerPos + m_lightDir * scaler;
+
+		Vector3 topPos = centerPos;
+		topPos.x = 0.0f;
+		topPos.y = 8000.0f - centerPos.y;
+		topPos.z = 0.0f;
+		float s = m_lightDir.Dot(topPos);
+		Vector3 lightPos = centerPos + m_lightDir * s;
 
 		Matrix lightViewMatrix = lightViewRot;
 		//ライトの座標を代入して、ライトビュー行列完成
@@ -237,16 +239,17 @@ void CascadeShadowMap::Update()
 		projMatrix.MakeOrthoProjectionMatrix(
 			w,
 			h,
-			vectorMax.z / 1000.0f,
+			1.0f,
 			vectorMax.z
 		);
 
 		//ライトビュープロジェクション行列を求めていくぅ～
 		m_lightVieProjMatrix[i] = lightViewMatrix * projMatrix;
 
-		nearClip = farClip * 0.25f;
-		farClip = shadowArea[i];
+		m_farList[i] = farClip;
+		nearClip = farClip;
 		farClip = shadowAreaTbl[i + 1];
+		
 	}
 }
 
