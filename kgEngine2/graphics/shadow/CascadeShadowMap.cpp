@@ -8,9 +8,9 @@ CascadeShadowMap::CascadeShadowMap()
 {
 	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	static float resTbl[SHADOWMAP_NUM][2] = {
-			{4096, 4096},
-			{2048, 2048},
 			{1024, 1024},
+			{512,   512},
+			{256,   256}
 	};
 	for (int i = 0; i < SHADOWMAP_NUM; i++) {
 		m_shadowMapRT[i].Create(
